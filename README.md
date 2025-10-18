@@ -1,1 +1,3 @@
-for the semicolon project , hackathon
+for the CampusHub Project
+
+stay tuned

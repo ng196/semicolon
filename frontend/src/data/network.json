@@ -1,0 +1,74 @@
+[
+  {
+    "id": "2",
+    "name": "Alex Chen",
+    "specialization": "Computer Science",
+    "year": "Junior",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+    "online": true,
+    "sharedClasses": ["CS 301", "MATH 201", "ENG 102"],
+    "attendanceRate": 94,
+    "interests": ["Web Development", "AI/ML"],
+    "lastSeen": "Online now"
+  },
+  {
+    "id": "3",
+    "name": "Emma Wilson",
+    "specialization": "Mathematics",
+    "year": "Sophomore",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Emma",
+    "online": false,
+    "sharedClasses": ["MATH 201", "PHYS 151"],
+    "attendanceRate": 98,
+    "interests": ["Statistics", "Research"],
+    "lastSeen": "Last seen 2h ago"
+  },
+  {
+    "id": "4",
+    "name": "Mike Rodriguez",
+    "specialization": "Engineering",
+    "year": "Senior",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Mike",
+    "online": false,
+    "sharedClasses": ["ENG 102"],
+    "attendanceRate": 87,
+    "interests": ["Robotics", "IoT"],
+    "lastSeen": "Away"
+  },
+  {
+    "id": "5",
+    "name": "James Park",
+    "specialization": "Computer Science",
+    "year": "Junior",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=James",
+    "online": true,
+    "sharedClasses": ["CS 301", "CS 201"],
+    "attendanceRate": 91,
+    "interests": ["Game Dev", "Graphics"],
+    "lastSeen": "Online now"
+  },
+  {
+    "id": "6",
+    "name": "David Kim",
+    "specialization": "Business",
+    "year": "Sophomore",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=David",
+    "online": false,
+    "sharedClasses": ["BUS 101"],
+    "attendanceRate": 96,
+    "interests": ["Finance", "Marketing"],
+    "lastSeen": "Last seen 1d ago"
+  },
+  {
+    "id": "7",
+    "name": "Lisa Chang",
+    "specialization": "Physics",
+    "year": "Junior",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa",
+    "online": true,
+    "sharedClasses": ["PHYS 151", "MATH 201"],
+    "attendanceRate": 99,
+    "interests": ["Quantum", "Theory"],
+    "lastSeen": "Online now"
+  }
+]

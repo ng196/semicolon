@@ -1,0 +1,73 @@
+[
+  {
+    "id": "1",
+    "title": "Request for Extended Library Hours",
+    "description": "Request to extend library operating hours until midnight during exam periods to accommodate students' study schedules.",
+    "type": "Class Request",
+    "status": "In Review",
+    "submittedTo": "Library Administration",
+    "submittedAt": "2 days ago",
+    "supporters": 23,
+    "required": 30,
+    "progress": 77,
+    "category": "Technical",
+    "submitter": {
+      "id": "1",
+      "name": "You",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
+    }
+  },
+  {
+    "id": "2",
+    "title": "WiFi Issues in Engineering Building",
+    "description": "Frequent disconnections and slow internet speed in Engineering Building, affecting online classes and research work.",
+    "type": "Individual",
+    "status": "Pending",
+    "submittedTo": "IT Department",
+    "submittedAt": "5 hours ago",
+    "supporters": 0,
+    "category": "Technical",
+    "submitter": {
+      "id": "1",
+      "name": "Sarah Johnson (You)",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
+    },
+    "responseTime": "Awaiting response"
+  },
+  {
+    "id": "3",
+    "title": "Additional Study Rooms Request",
+    "description": "Request for more group study rooms in the library due to high demand during exam periods.",
+    "type": "Class Request",
+    "status": "Resolved",
+    "submittedTo": "Library Administration",
+    "submittedAt": "1 week ago",
+    "supporters": 45,
+    "required": 30,
+    "progress": 100,
+    "category": "Facilities",
+    "submitter": {
+      "id": "2",
+      "name": "Alex Chen",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"
+    },
+    "resolution": "Two additional study rooms have been allocated and will be available starting next week."
+  },
+  {
+    "id": "4",
+    "title": "Grade Appeal for CS 301",
+    "description": "Formal appeal regarding midterm exam grading in CS 301. Requesting review of partial credit allocation.",
+    "type": "Individual",
+    "status": "In Review",
+    "submittedTo": "Prof. Martinez",
+    "submittedAt": "3 days ago",
+    "supporters": 0,
+    "category": "Academic",
+    "submitter": {
+      "id": "2",
+      "name": "Alex Chen",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"
+    },
+    "responseTime": "Response expected in 2-3 days"
+  }
+]

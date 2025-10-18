@@ -1,0 +1,9 @@
+.github
+code
+.playwright-mcp
+
+.env
+backend
+files
+
+.eslintignore

@@ -1,0 +1,93 @@
+[
+  {
+    "id": "1",
+    "name": "AI Chatbot Project",
+    "type": "Project",
+    "description": "Building an intelligent customer service bot using NLP and machine learning. Looking for developers and designers.",
+    "icon": "code",
+    "specialization": "CS",
+    "year": "3rd Year",
+    "members": 6,
+    "rating": 4.9,
+    "interests": ["Web Development", "AI/ML"],
+    "color": "blue"
+  },
+  {
+    "id": "2",
+    "name": "Photography Club",
+    "type": "Club",
+    "description": "Capture moments, share stories, and improve your photography skills with fellow enthusiasts.",
+    "icon": "camera",
+    "specialization": "All",
+    "year": "All",
+    "members": 47,
+    "rating": 4.8,
+    "interests": ["Statistics", "Research"],
+    "color": "purple"
+  },
+  {
+    "id": "3",
+    "name": "EcoTracker App",
+    "type": "Project",
+    "description": "Mobile app to track personal carbon footprint and promote sustainable living habits among students.",
+    "icon": "leaf",
+    "specialization": "CS, Design",
+    "year": "2nd Year",
+    "members": 5,
+    "rating": 4.7,
+    "interests": ["Robotics", "IoT"],
+    "color": "green"
+  },
+  {
+    "id": "4",
+    "name": "AI Research Club",
+    "type": "Club",
+    "description": "Explore the latest in artificial intelligence research, share papers, and work on cutting-edge projects.",
+    "icon": "brain",
+    "specialization": "CS, Math",
+    "year": "All Years",
+    "members": 124,
+    "rating": 4.9,
+    "interests": ["Web Development", "AI/ML"],
+    "color": "red"
+  },
+  {
+    "id": "5",
+    "name": "Indie Game Studio",
+    "type": "Project",
+    "description": "Creating indie games for mobile and PC platforms. Looking for artists, developers, and sound designers.",
+    "icon": "gamepad",
+    "specialization": "CS, Design",
+    "year": "All Years",
+    "members": 8,
+    "rating": 4.8,
+    "interests": ["Game Dev", "Graphics"],
+    "color": "yellow"
+  },
+  {
+    "id": "6",
+    "name": "Environmental Club",
+    "type": "Club",
+    "description": "Promoting sustainability on campus through awareness campaigns, cleanup drives, and green initiatives.",
+    "icon": "tree",
+    "specialization": "All",
+    "year": "All",
+    "members": 89,
+    "rating": 4.7,
+    "interests": ["Quantum", "Theory"],
+    "color": "teal"
+  },
+  {
+    "id": "7",
+    "name": "Mobile App Project",
+    "type": "Project",
+    "description": "Looking for developers to build innovative mobile solutions.",
+    "icon": "smartphone",
+    "specialization": "CS",
+    "year": "All",
+    "members": 4,
+    "rating": 4.6,
+    "interests": ["Mobile Dev", "UX Design"],
+    "color": "indigo"
+  }
+]
