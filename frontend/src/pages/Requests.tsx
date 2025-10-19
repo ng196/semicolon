@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Plus, Search, Filter, Users, Clock, Eye, Share2, ThumbsUp, CheckCircle2, MessageSquare } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Search, Filter, Users, Clock, Eye, Share2, ThumbsUp, CheckCircle2, MessageSquare, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -8,18 +8,58 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Progress } from "@/components/ui/progress";
 import { StatusBadge } from "@/components/StatusBadge";
 import { CategoryBadge } from "@/components/CategoryBadge";
-import requestsData from "@/data/requests.json";
+import { requestsApi } from "@/services/api";
+
+interface Request {
+  id: number;
+  title: string;
+  description: string;
+  type: string;
+  status: string;
+  submitted_to: string;
+  category: string;
+  submitter_id: number;
+  submitter_name: string;
+  submitter_avatar?: string;
+  supporters: number;
+  required: number;
+  progress: number;
+  resolution?: string;
+  response_time?: string;
+  submitted_at: string;
+}
 
 export default function Requests() {
   const [activeTab, setActiveTab] = useState("all");
+  const [requests, setRequests] = useState<Request[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadRequests();
+  }, []);
+
+  const loadRequests = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await requestsApi.getAll();
+      setRequests(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load requests');
+      console.error('Error loading requests:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredRequests = activeTab === "all" 
-    ? requestsData 
+    ? requests
     : activeTab === "my" 
-    ? requestsData.filter(req => req.submitter.name.includes("You"))
+    ? requests.filter(req => req.submitter_name.includes("You") || req.submitter_name === "Sarah Johnson")
     : activeTab === "class"
-    ? requestsData.filter(req => req.type === "Class Request")
-    : requestsData.filter(req => req.status === "Resolved");
+    ? requests.filter(req => req.type === "Class Request")
+    : requests.filter(req => req.status === "Resolved");
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -106,6 +146,29 @@ export default function Requests() {
           </div>
         </div>
 
+        {loading && (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-2 text-muted-foreground">Loading requests...</span>
+          </div>
+        )}
+
+        {error && (
+          <Card className="p-6 border-red-200 bg-red-50">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-red-600" />
+              <div>
+                <p className="font-medium text-red-900">Failed to load requests</p>
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+              <Button onClick={loadRequests} variant="outline" size="sm" className="ml-auto">
+                Retry
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {!loading && !error && (
         <div className="space-y-4">
           {filteredRequests.map((request) => (
             <Card key={request.id} className="overflow-hidden transition-all hover:shadow-lg">
@@ -139,13 +202,13 @@ export default function Requests() {
                   <div>
                     <span className="flex items-center gap-2 text-muted-foreground">
                       <Users className="h-4 w-4" />
-                      To: {request.submittedTo}
+                      To: {request.submitted_to}
                     </span>
                   </div>
                   <div>
                     <span className="flex items-center gap-2 text-muted-foreground">
                       <Clock className="h-4 w-4" />
-                      Submitted: {request.submittedAt}
+                      Submitted: {request.submitted_at}
                     </span>
                   </div>
                   <div>
@@ -187,22 +250,22 @@ export default function Requests() {
                   </div>
                 )}
 
-                {request.responseTime && (
+                {request.response_time && (
                   <div className="mb-4 text-sm text-muted-foreground">
-                    {request.responseTime}
+                    {request.response_time}
                   </div>
                 )}
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <img
-                      src={request.submitter.avatar}
-                      alt={request.submitter.name}
+                      src={request.submitter_avatar}
+                      alt={request.submitter_name}
                       className="h-8 w-8 rounded-full"
                     />
                     <div>
                       <p className="text-sm font-medium text-foreground">
-                        {request.submitter.name}
+                        {request.submitter_name}
                       </p>
                     </div>
                     {request.supporters !== undefined && (
@@ -243,7 +306,9 @@ export default function Requests() {
             </Card>
           ))}
         </div>
+        )}
       </div>
     </div>
   );
 }
+

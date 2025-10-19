@@ -4,6 +4,7 @@ import userRoutes from './src/routes/users.js';
 import hubRoutes from './src/routes/hubs.js';
 import eventRoutes from './src/routes/events.js';
 import marketplaceRoutes from './src/routes/marketplace.js';
+import requestRoutes from './src/routes/requests.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +19,7 @@ app.use('/users', userRoutes);
 app.use('/hubs', hubRoutes);
 app.use('/events', eventRoutes);
 app.use('/marketplace', marketplaceRoutes);
+app.use('/requests', requestRoutes);
 
 // app.get('/', (req, res) => {
 //   res.send('Hello World!');

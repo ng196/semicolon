@@ -18,7 +18,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 const API_BASE = 'http://localhost:3000';
-const ENDPOINTS = ['/hubs', '/events', '/marketplace', '/users'];
+const ENDPOINTS = ['/hubs', '/events', '/marketplace', '/requests'];
 const LOG_FILE = path.join(process.cwd(), 'apilogs.txt');
 
 interface TestResult {

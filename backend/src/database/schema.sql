@@ -81,3 +81,25 @@ CREATE TABLE IF NOT EXISTS marketplace_items (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (seller_id) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS requests (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  type TEXT NOT NULL,
+  status TEXT DEFAULT 'Pending',
+  submitted_to TEXT NOT NULL,
+  category TEXT NOT NULL,
+  submitter_id INTEGER NOT NULL,
+  submitter_name TEXT NOT NULL,
+  submitter_avatar TEXT,
+  supporters INTEGER DEFAULT 0,
+  required INTEGER DEFAULT 30,
+  progress INTEGER DEFAULT 0,
+  resolution TEXT,
+  response_time TEXT,
+  submitted_at TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (submitter_id) REFERENCES users(id)
+);
+

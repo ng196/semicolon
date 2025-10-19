@@ -18,14 +18,17 @@ function seedDatabase() {
 
     const eventsJsonPath = join(__dirname, '../../frontend/src/data/events.json');
     const marketplaceJsonPath = join(__dirname, '../../frontend/src/data/marketplace.json');
+    const requestsJsonPath = join(__dirname, '../../frontend/src/data/requests.json');
     const eventsData = JSON.parse(readFileSync(eventsJsonPath, 'utf-8'));
     const marketplaceData = JSON.parse(readFileSync(marketplaceJsonPath, 'utf-8'));
+    const requestsData = JSON.parse(readFileSync(requestsJsonPath, 'utf-8'));
 
-    console.log(`Found ${usersData.length} users, ${hubsData.length} hubs, ${eventsData.length} events, and ${marketplaceData.length} marketplace items`);
+    console.log(`Found ${usersData.length} users, ${hubsData.length} hubs, ${eventsData.length} events, ${marketplaceData.length} marketplace items, and ${requestsData.length} requests`);
 
     db.exec('DELETE FROM hub_interests');
     db.exec('DELETE FROM hub_members');
     db.exec('DELETE FROM marketplace_items');
+    db.exec('DELETE FROM requests');
     db.exec('DELETE FROM hubs');
     db.exec('DELETE FROM events');
     db.exec('DELETE FROM users');
@@ -153,6 +156,37 @@ function seedDatabase() {
 
     insertItemTransaction(marketplaceData);
     console.log(`Inserted ${marketplaceData.length} marketplace items`);
+
+    const insertRequest = db.prepare(`
+      INSERT INTO requests (id, title, description, type, submitted_to, category, submitter_id, submitter_name, submitter_avatar, supporters, required, progress, resolution, response_time, submitted_at, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    const insertRequestTransaction = db.transaction((requests) => {
+      for (const request of requests) {
+        insertRequest.run(
+          request.id,
+          request.title,
+          request.description,
+          request.type,
+          request.submittedTo,
+          request.category,
+          request.submitter?.id || 1,
+          request.submitter?.name || 'Unknown',
+          request.submitter?.avatar || null,
+          request.supporters || 0,
+          request.required || 30,
+          request.progress || 0,
+          request.resolution || null,
+          request.responseTime || null,
+          request.submittedAt || null,
+          request.status || 'Pending'
+        );
+      }
+    });
+
+    insertRequestTransaction(requestsData);
+    console.log(`Inserted ${requestsData.length} requests`);
 
     console.log('Database seeding completed successfully!');
   } catch (error) {

@@ -118,3 +118,45 @@ export const marketplaceApi = {
     return handleResponse(response);
   },
 };
+
+export const requestsApi = {
+  getAll: async () => {
+    const response = await fetch(`${API_BASE_URL}/requests`);
+    return handleResponse(response);
+  },
+
+  getById: async (id: string | number) => {
+    const response = await fetch(`${API_BASE_URL}/requests/${id}`);
+    return handleResponse(response);
+  },
+
+  create: async (requestData: Partial<HubData>) => {
+    const response = await fetch(`${API_BASE_URL}/requests`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+  },
+
+  update: async (id: string | number, requestData: Partial<HubData>) => {
+    const response = await fetch(`${API_BASE_URL}/requests/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
+    });
+    return handleResponse(response);
+  },
+
+  delete: async (id: string | number) => {
+    const response = await fetch(`${API_BASE_URL}/requests/${id}`, {
+      method: 'DELETE',
+    });
+    return handleResponse(response);
+  },
+};
+
