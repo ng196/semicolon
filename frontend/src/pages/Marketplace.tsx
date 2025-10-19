@@ -16,14 +16,12 @@ interface MarketplaceItem {
   category: string;
   condition: string;
   image: string;
-  seller: {
-    id: number;
-    name: string;
-    avatar: string;
-    rating: number;
-  };
+  seller_id: number;
+  seller_name: string;
+  seller_avatar: string;
+  seller_rating: number;
   liked: number;
-  postedAt: string;
+  posted_at: string;
 }
 
 export default function Marketplace() {
@@ -154,90 +152,88 @@ export default function Marketplace() {
 
         {!loading && !error && (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => (
-            <Card key={item.id} className="group overflow-hidden transition-all hover:shadow-lg">
-              <div className="relative">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="h-48 w-full object-cover transition-transform group-hover:scale-105"
-                />
-                <button
-                  className={`absolute right-2 top-2 rounded-full p-2 ${
-                    item.liked
-                      ? "bg-red-500 text-white"
-                      : "bg-white/90 text-gray-700 hover:bg-white"
-                  } transition-colors`}
-                >
-                  <Heart className={`h-4 w-4 ${item.liked ? "fill-current" : ""}`} />
-                </button>
-                <div className="absolute left-2 top-2">
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-medium ${
-                      item.type === "For Sale"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-orange-100 text-orange-700"
-                    }`}
+            {items.map((item) => (
+              <Card key={item.id} className="group overflow-hidden transition-all hover:shadow-lg">
+                <div className="relative">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="h-48 w-full object-cover transition-transform group-hover:scale-105"
+                  />
+                  <button
+                    className={`absolute right-2 top-2 rounded-full p-2 ${item.liked
+                        ? "bg-red-500 text-white"
+                        : "bg-white/90 text-gray-700 hover:bg-white"
+                      } transition-colors`}
                   >
-                    {item.type}
-                  </span>
+                    <Heart className={`h-4 w-4 ${item.liked ? "fill-current" : ""}`} />
+                  </button>
+                  <div className="absolute left-2 top-2">
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-medium ${item.type === "For Sale"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-orange-100 text-orange-700"
+                        }`}
+                    >
+                      {item.type}
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              <div className="p-4">
-                <div className="mb-2 flex items-start justify-between">
-                  <h3 className="text-lg font-semibold text-foreground line-clamp-1">
-                    {item.title}
-                  </h3>
-                  <p className="text-xl font-bold text-primary">
-                    {item.price === 0 ? "Free" : `$${item.price}`}
+                <div className="p-4">
+                  <div className="mb-2 flex items-start justify-between">
+                    <h3 className="text-lg font-semibold text-foreground line-clamp-1">
+                      {item.title}
+                    </h3>
+                    <p className="text-xl font-bold text-primary">
+                      {item.price === 0 ? "Free" : `$${item.price}`}
+                    </p>
+                  </div>
+
+                  <p className="mb-3 line-clamp-2 text-sm text-muted-foreground">
+                    {item.description}
                   </p>
-                </div>
 
-                <p className="mb-3 line-clamp-2 text-sm text-muted-foreground">
-                  {item.description}
-                </p>
+                  <div className="mb-4 flex flex-wrap gap-2">
+                    <CategoryBadge category={item.category} />
+                    <span className="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                      {item.condition}
+                    </span>
+                  </div>
 
-                <div className="mb-4 flex flex-wrap gap-2">
-                  <CategoryBadge category={item.category} />
-                  <span className="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
-                    {item.condition}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <img
-                      src={item.seller_avatar}
-                      alt={item.seller_name}
-                      className="h-8 w-8 rounded-full"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">
-                        {item.seller_name}
-                      </p>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                        <span>{item.seller_rating}</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={item.seller_avatar}
+                        alt={item.seller_name}
+                        className="h-8 w-8 rounded-full"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          {item.seller_name}
+                        </p>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                          <span>{item.seller_rating}</span>
+                        </div>
                       </div>
                     </div>
+                    {item.type === "For Sale" ? (
+                      <Button size="sm">Contact</Button>
+                    ) : (
+                      <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
+                        Request
+                      </Button>
+                    )}
                   </div>
-                  {item.type === "For Sale" ? (
-                    <Button size="sm">Contact</Button>
-                  ) : (
-                    <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
-                      Request
-                    </Button>
-                  )}
-                </div>
 
-                <div className="mt-2 text-xs text-muted-foreground">
-                  Posted {item.postedAt}
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    Posted {item.posted_at}
+                  </div>
                 </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
         )}
 
         {!loading && !error && (
