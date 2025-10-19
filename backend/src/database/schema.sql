@@ -46,3 +46,19 @@ CREATE TABLE IF NOT EXISTS hub_interests (
   interest TEXT NOT NULL,
   FOREIGN KEY (hub_id) REFERENCES hubs(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  category TEXT NOT NULL,
+  description TEXT NOT NULL,
+  date TEXT NOT NULL,
+  time TEXT NOT NULL,
+  location TEXT NOT NULL,
+  organizer TEXT NOT NULL,
+  specialization TEXT,
+  attending INTEGER DEFAULT 0,
+  capacity INTEGER DEFAULT 100,
+  color TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

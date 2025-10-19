@@ -16,11 +16,15 @@ function seedDatabase() {
     const usersData = JSON.parse(readFileSync(usersJsonPath, 'utf-8'));
     const hubsData = JSON.parse(readFileSync(hubsJsonPath, 'utf-8'));
 
-    console.log(`Found ${usersData.length} users and ${hubsData.length} hubs`);
+    const eventsJsonPath = join(__dirname, '../../frontend/src/data/events.json');
+    const eventsData = JSON.parse(readFileSync(eventsJsonPath, 'utf-8'));
+
+    console.log(`Found ${usersData.length} users, ${hubsData.length} hubs, and ${eventsData.length} events`);
 
     db.exec('DELETE FROM hub_interests');
     db.exec('DELETE FROM hub_members');
     db.exec('DELETE FROM hubs');
+    db.exec('DELETE FROM events');
     db.exec('DELETE FROM users');
     console.log('Cleared existing data');
 
@@ -90,6 +94,33 @@ function seedDatabase() {
 
     insertHubTransaction(hubsData);
     console.log(`Inserted ${hubsData.length} hubs with interests`);
+
+    const insertEvent = db.prepare(`
+      INSERT INTO events (id, name, category, description, date, time, location, organizer, specialization, attending, capacity, color)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    const insertEventTransaction = db.transaction((events) => {
+      for (const event of events) {
+        insertEvent.run(
+          event.id,
+          event.name,
+          event.category,
+          event.description,
+          event.date,
+          event.time,
+          event.location,
+          event.organizer,
+          event.specialization || null,
+          event.attending || 0,
+          event.capacity || 100,
+          event.color || null
+        );
+      }
+    });
+
+    insertEventTransaction(eventsData);
+    console.log(`Inserted ${eventsData.length} events`);
 
     console.log('Database seeding completed successfully!');
   } catch (error) {

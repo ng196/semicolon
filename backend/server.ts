@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import userRoutes from './src/routes/users.js';
 import hubRoutes from './src/routes/hubs.js';
+import eventRoutes from './src/routes/events.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/users', userRoutes);
 app.use('/hubs', hubRoutes);
+app.use('/events', eventRoutes);
 
 // app.get('/', (req, res) => {
 //   res.send('Hello World!');

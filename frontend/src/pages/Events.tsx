@@ -1,15 +1,52 @@
-import { useState } from "react";
-import { Plus, Search, Filter, Calendar, MapPin, Users, Clock, Bookmark, Check } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Search, Filter, Calendar, MapPin, Users, Clock, Bookmark, Check, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CategoryBadge } from "@/components/CategoryBadge";
-import eventsData from "@/data/events.json";
+import { eventsApi } from "@/services/api";
+
+interface Event {
+  id: string | number;
+  name: string;
+  category: string;
+  description: string;
+  date: string;
+  time: string;
+  location: string;
+  organizer: string;
+  specialization: string;
+  attending: number;
+  capacity: number;
+  color: string;
+  isAttending?: boolean;
+}
 
 export default function Events() {
   const [activeTab, setActiveTab] = useState("all");
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadEvents();
+  }, []);
+
+  const loadEvents = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await eventsApi.getAll();
+      setEvents(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load events');
+      console.error('Error loading events:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -100,8 +137,31 @@ export default function Events() {
           </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          {eventsData.map((event) => (
+        {loading && (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-2 text-muted-foreground">Loading events...</span>
+          </div>
+        )}
+
+        {error && (
+          <Card className="p-6 border-red-200 bg-red-50">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-red-600" />
+              <div>
+                <p className="font-medium text-red-900">Failed to load events</p>
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+              <Button onClick={loadEvents} variant="outline" size="sm" className="ml-auto">
+                Retry
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {!loading && !error && (
+          <div className="grid gap-6 md:grid-cols-2">
+          {events.map((event) => (
             <Card key={event.id} className="group overflow-hidden transition-all hover:shadow-lg">
               <div className="p-6">
                 <div className="mb-4 flex items-start justify-between">
@@ -182,10 +242,13 @@ export default function Events() {
             </Card>
           ))}
         </div>
+        )}
 
-        <div className="mt-8 flex justify-center">
-          <Button variant="outline">Load More Events</Button>
-        </div>
+        {!loading && !error && (
+          <div className="mt-8 flex justify-center">
+            <Button variant="outline">Load More Events</Button>
+          </div>
+        )}
       </div>
     </div>
   );

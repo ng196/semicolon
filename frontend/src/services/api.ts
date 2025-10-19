@@ -72,3 +72,26 @@ export const usersApi = {
     return handleResponse(response);
   },
 };
+
+export const eventsApi = {
+  getAll: async () => {
+    const response = await fetch(`${API_BASE_URL}/events`);
+    return handleResponse(response);
+  },
+
+  getById: async (id: string | number) => {
+    const response = await fetch(`${API_BASE_URL}/events/${id}`);
+    return handleResponse(response);
+  },
+
+  create: async (eventData: Partial<HubData>) => {
+    const response = await fetch(`${API_BASE_URL}/events`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(eventData),
+    });
+    return handleResponse(response);
+  },
+};
