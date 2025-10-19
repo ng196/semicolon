@@ -1,0 +1,94 @@
+{
+  "inputs": [
+    {
+      "id": "brave_api_key",
+      "type": "promptString",
+      "description": "Brave Search API key (free: https://brave.com/search/api/)",
+      "password": true
+    },
+    {
+      "id": "github_token",
+      "type": "promptString",
+      "description": "GitHub Personal Access Token",
+      "password": true
+    }
+  ],
+  "mcpServers": {
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"],
+      "env": {},
+      "disabled": true,
+      "autoApprove": []
+    }
+  },
+  "servers": {
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/home/ng/code_playground/webdev"
+      ],
+      "description": "🔴 CRITICAL: Direct local file operations"
+    },
+    "microsoft/playwright-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ],
+      "gallery": "https://api.mcp.github.com/v0/servers/41b79849-7e6c-4fc7-82c0-5a611ea21523",
+      "version": "0.0.1-seed",
+      "description": "🟠 CORE: Browser automation + DevTools"
+    },
+    "brave-search": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-brave-search"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "${input:brave_api_key}"
+      },
+      "description": "🟠 CORE: Web search"
+    },
+    "upstash/context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "gallery": "https://api.mcp.github.com/v0/servers/dcec7705-b81b-4e0f-8615-8032604be7ad",
+      "version": "1.0.0",
+      "description": "📚 BUILT-IN: Library documentation (no config needed)"
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "chrome-devtools-mcp@latest"
+      ],
+      "type": "stdio"
+    },
+    "console-ninja": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "-c",
+        "node ~/.console-ninja/mcp/"
+      ],
+      "type": "stdio"
+    },
+    "testsprite": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@testsprite/testsprite-mcp@latest"
+      ],
+      "env": {
+        "API_KEY": "sk-user-I-xgf4_IVFp3dLSCG4ePwmbbcZGY7BNoW9Kz6xM3ThAIjmwf0ulrxSVNQ9lXnCSmAkp2v9Ow-03iV-apiJRmFeXDBuy4jc5gV38nAj52SsT96qVL-QmC0gQZ2ZPlHcamb5o"
+      },
+      "description": "🧪 AI-powered test generation and analysis"
+    }
+  }
+}

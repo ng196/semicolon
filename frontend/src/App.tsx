@@ -12,34 +12,153 @@ import Marketplace from "./pages/Marketplace";
 import Network from "./pages/Network";
 import Requests from "./pages/Requests";
 import NotFound from "./pages/NotFound";
+// Auth pages (lazy loaded)
+import { lazy, Suspense } from "react";
+import { AuthProvider } from "./pages/auth/contexts/AuthContext";
+import { AuthGuard, GuestGuard } from "./pages/auth/components/AuthGuard";
+
+const Login = lazy(() => import("./pages/auth/Login"));
+const Signup = lazy(() => import("./pages/auth/Signup"));
+const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <SidebarProvider>
-          <div className="flex min-h-screen w-full">
-            <AppSidebar />
-            <div className="flex-1">
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/hubs" element={<Hubs />} />
-                <Route path="/events" element={<Events />} />
-                <Route path="/marketplace" element={<Marketplace />} />
-                <Route path="/network" element={<Network />} />
-                <Route path="/requests" element={<Requests />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </div>
-          </div>
-        </SidebarProvider>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            {/* Auth routes - accessible only when NOT logged in */}
+            <Route
+              path="/auth/login"
+              element={
+                <GuestGuard>
+                  <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+                    <Login />
+                  </Suspense>
+                </GuestGuard>
+              }
+            />
+            <Route
+              path="/auth/signup"
+              element={
+                <GuestGuard>
+                  <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+                    <Signup />
+                  </Suspense>
+                </GuestGuard>
+              }
+            />
+            <Route
+              path="/auth/forgot-password"
+              element={
+                <GuestGuard>
+                  <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+                    <ForgotPassword />
+                  </Suspense>
+                </GuestGuard>
+              }
+            />
+
+            {/* Protected routes - require authentication */}
+            <Route
+              path="/"
+              element={
+                <AuthGuard>
+                  <SidebarProvider>
+                    <div className="flex min-h-screen w-full">
+                      <AppSidebar />
+                      <div className="flex-1">
+                        <Dashboard />
+                      </div>
+                    </div>
+                  </SidebarProvider>
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/hubs"
+              element={
+                <AuthGuard>
+                  <SidebarProvider>
+                    <div className="flex min-h-screen w-full">
+                      <AppSidebar />
+                      <div className="flex-1">
+                        <Hubs />
+                      </div>
+                    </div>
+                  </SidebarProvider>
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/events"
+              element={
+                <AuthGuard>
+                  <SidebarProvider>
+                    <div className="flex min-h-screen w-full">
+                      <AppSidebar />
+                      <div className="flex-1">
+                        <Events />
+                      </div>
+                    </div>
+                  </SidebarProvider>
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/marketplace"
+              element={
+                <AuthGuard>
+                  <SidebarProvider>
+                    <div className="flex min-h-screen w-full">
+                      <AppSidebar />
+                      <div className="flex-1">
+                        <Marketplace />
+                      </div>
+                    </div>
+                  </SidebarProvider>
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/network"
+              element={
+                <AuthGuard>
+                  <SidebarProvider>
+                    <div className="flex min-h-screen w-full">
+                      <AppSidebar />
+                      <div className="flex-1">
+                        <Network />
+                      </div>
+                    </div>
+                  </SidebarProvider>
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/requests"
+              element={
+                <AuthGuard>
+                  <SidebarProvider>
+                    <div className="flex min-h-screen w-full">
+                      <AppSidebar />
+                      <div className="flex-1">
+                        <Requests />
+                      </div>
+                    </div>
+                  </SidebarProvider>
+                </AuthGuard>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

@@ -53,13 +53,13 @@ export default function Requests() {
     }
   };
 
-  const filteredRequests = activeTab === "all" 
+  const filteredRequests = activeTab === "all"
     ? requests
-    : activeTab === "my" 
-    ? requests.filter(req => req.submitter_name.includes("You") || req.submitter_name === "Sarah Johnson")
-    : activeTab === "class"
-    ? requests.filter(req => req.type === "Class Request")
-    : requests.filter(req => req.status === "Resolved");
+    : activeTab === "my"
+      ? requests.filter(req => req.submitter_name.includes("You") || req.submitter_name === "Sarah Johnson")
+      : activeTab === "class"
+        ? requests.filter(req => req.type === "Class Request")
+        : requests.filter(req => req.status === "Resolved");
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -169,143 +169,143 @@ export default function Requests() {
         )}
 
         {!loading && !error && (
-        <div className="space-y-4">
-          {filteredRequests.map((request) => (
-            <Card key={request.id} className="overflow-hidden transition-all hover:shadow-lg">
-              <div className="p-6">
-                <div className="mb-4 flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="mb-2 flex items-start gap-3">
-                      <h3 className="text-xl font-semibold text-foreground hover:text-primary transition-colors cursor-pointer">
-                        {request.title}
-                      </h3>
-                      <div className="flex gap-2">
-                        <StatusBadge status={request.status} />
-                        <CategoryBadge category={request.type} />
+          <div className="space-y-4">
+            {filteredRequests.map((request) => (
+              <Card key={request.id} className="overflow-hidden transition-all hover:shadow-lg">
+                <div className="p-6">
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="mb-2 flex items-start gap-3">
+                        <h3 className="text-xl font-semibold text-foreground hover:text-primary transition-colors cursor-pointer">
+                          {request.title}
+                        </h3>
+                        <div className="flex gap-2">
+                          <StatusBadge status={request.status} />
+                          <CategoryBadge category={request.type} />
+                        </div>
                       </div>
-                    </div>
-                    <p className="mb-3 text-sm text-muted-foreground">
-                      {request.description}
-                    </p>
-                  </div>
-                  <div className="flex gap-1">
-                    <Button size="icon" variant="ghost" className="h-8 w-8">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button size="icon" variant="ghost" className="h-8 w-8">
-                      <Share2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="mb-4 grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
-                  <div>
-                    <span className="flex items-center gap-2 text-muted-foreground">
-                      <Users className="h-4 w-4" />
-                      To: {request.submitted_to}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="flex items-center gap-2 text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      Submitted: {request.submitted_at}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="flex items-center gap-2 text-muted-foreground">
-                      Category: {request.category}
-                    </span>
-                  </div>
-                  {request.supporters !== undefined && (
-                    <div>
-                      <span className="flex items-center gap-2 text-muted-foreground">
-                        <ThumbsUp className="h-4 w-4" />
-                        {request.supporters} supporters
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {request.supporters !== undefined && request.required && (
-                  <div className="mb-4">
-                    <div className="mb-2 flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Progress:</span>
-                      <span className="font-semibold text-foreground">
-                        {request.supporters}/{request.required} required
-                      </span>
-                    </div>
-                    <Progress value={request.progress} className="h-2" />
-                  </div>
-                )}
-
-                {request.resolution && (
-                  <div className="mb-4 rounded-lg bg-green-50 p-4 border border-green-200">
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
-                      <div>
-                        <p className="font-medium text-green-900 mb-1">Resolution Update</p>
-                        <p className="text-sm text-green-700">{request.resolution}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {request.response_time && (
-                  <div className="mb-4 text-sm text-muted-foreground">
-                    {request.response_time}
-                  </div>
-                )}
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={request.submitter_avatar}
-                      alt={request.submitter_name}
-                      className="h-8 w-8 rounded-full"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">
-                        {request.submitter_name}
+                      <p className="mb-3 text-sm text-muted-foreground">
+                        {request.description}
                       </p>
                     </div>
+                    <div className="flex gap-1">
+                      <Button size="icon" variant="ghost" className="h-8 w-8">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button size="icon" variant="ghost" className="h-8 w-8">
+                        <Share2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="mb-4 grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
+                    <div>
+                      <span className="flex items-center gap-2 text-muted-foreground">
+                        <Users className="h-4 w-4" />
+                        To: {request.submitted_to}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="flex items-center gap-2 text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        Submitted: {request.submitted_at}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="flex items-center gap-2 text-muted-foreground">
+                        Category: {request.category}
+                      </span>
+                    </div>
                     {request.supporters !== undefined && (
-                      <>
-                        <span className="text-muted-foreground">•</span>
-                        <div className="flex -space-x-2">
-                          {[1, 2, 3].map((i) => (
-                            <img
-                              key={i}
-                              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${request.id}-${i}`}
-                              alt="Supporter"
-                              className="h-6 w-6 rounded-full border-2 border-background"
-                            />
-                          ))}
-                          {request.supporters > 3 && (
-                            <span className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-background bg-muted text-xs">
-                              +{request.supporters - 3}
-                            </span>
-                          )}
-                        </div>
-                      </>
+                      <div>
+                        <span className="flex items-center gap-2 text-muted-foreground">
+                          <ThumbsUp className="h-4 w-4" />
+                          {request.supporters} supporters
+                        </span>
+                      </div>
                     )}
                   </div>
-                  <div className="flex gap-2">
-                    {request.supporters !== undefined && (
+
+                  {request.supporters !== undefined && request.required && (
+                    <div className="mb-4">
+                      <div className="mb-2 flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Progress:</span>
+                        <span className="font-semibold text-foreground">
+                          {request.supporters}/{request.required} required
+                        </span>
+                      </div>
+                      <Progress value={request.progress} className="h-2" />
+                    </div>
+                  )}
+
+                  {request.resolution && (
+                    <div className="mb-4 rounded-lg bg-green-50 p-4 border border-green-200">
+                      <div className="flex items-start gap-2">
+                        <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+                        <div>
+                          <p className="font-medium text-green-900 mb-1">Resolution Update</p>
+                          <p className="text-sm text-green-700">{request.resolution}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {request.response_time && (
+                    <div className="mb-4 text-sm text-muted-foreground">
+                      {request.response_time}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={request.submitter_avatar}
+                        alt={request.submitter_name}
+                        className="h-8 w-8 rounded-full"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          {request.submitter_name}
+                        </p>
+                      </div>
+                      {request.supporters !== undefined && (
+                        <>
+                          <span className="text-muted-foreground">•</span>
+                          <div className="flex -space-x-2">
+                            {[1, 2, 3].map((i) => (
+                              <img
+                                key={i}
+                                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${request.id}-${i}`}
+                                alt="Supporter"
+                                className="h-6 w-6 rounded-full border-2 border-background"
+                              />
+                            ))}
+                            {request.supporters > 3 && (
+                              <span className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-background bg-muted text-xs">
+                                +{request.supporters - 3}
+                              </span>
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      {request.supporters !== undefined && (
+                        <Button size="sm" variant="outline" className="gap-2">
+                          <ThumbsUp className="h-4 w-4" />
+                          Support
+                        </Button>
+                      )}
                       <Button size="sm" variant="outline" className="gap-2">
-                        <ThumbsUp className="h-4 w-4" />
-                        Support
+                        <MessageSquare className="h-4 w-4" />
+                        Comment
                       </Button>
-                    )}
-                    <Button size="sm" variant="outline" className="gap-2">
-                      <MessageSquare className="h-4 w-4" />
-                      Comment
-                    </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
         )}
       </div>
     </div>
