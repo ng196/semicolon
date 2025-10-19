@@ -1,0 +1,48 @@
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  username TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  avatar TEXT,
+  specialization TEXT,
+  year TEXT,
+  interests TEXT,
+  online_status INTEGER DEFAULT 0,
+  last_seen DATETIME,
+  attendance_rate INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS hubs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL,
+  description TEXT NOT NULL,
+  icon TEXT,
+  specialization TEXT,
+  year TEXT,
+  creator_id INTEGER NOT NULL,
+  rating REAL DEFAULT 0.0,
+  color TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (creator_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS hub_members (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  hub_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  role TEXT DEFAULT 'member',
+  joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (hub_id) REFERENCES hubs(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE(hub_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS hub_interests (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  hub_id INTEGER NOT NULL,
+  interest TEXT NOT NULL,
+  FOREIGN KEY (hub_id) REFERENCES hubs(id) ON DELETE CASCADE
+);

@@ -1,0 +1,101 @@
+import { db } from './db.js';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+function seedDatabase() {
+  console.log('Starting database seeding...');
+
+  try {
+    const usersJsonPath = join(__dirname, '../../frontend/src/data/users.json');
+    const hubsJsonPath = join(__dirname, '../../frontend/src/data/hubs.json');
+
+    const usersData = JSON.parse(readFileSync(usersJsonPath, 'utf-8'));
+    const hubsData = JSON.parse(readFileSync(hubsJsonPath, 'utf-8'));
+
+    console.log(`Found ${usersData.length} users and ${hubsData.length} hubs`);
+
+    db.exec('DELETE FROM hub_interests');
+    db.exec('DELETE FROM hub_members');
+    db.exec('DELETE FROM hubs');
+    db.exec('DELETE FROM users');
+    console.log('Cleared existing data');
+
+    const insertUser = db.prepare(`
+      INSERT INTO users (id, email, username, name, avatar, specialization, year, online_status, password_hash)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    const insertUserTransaction = db.transaction((users) => {
+      for (const user of users) {
+        insertUser.run(
+          user.id,
+          user.email || `user${user.id}@campus.edu`,
+          user.name.toLowerCase().replace(/\s+/g, '.'),
+          user.name,
+          user.avatar,
+          user.specialization,
+          user.year,
+          user.online ? 1 : 0,
+          'hashed_password_placeholder'
+        );
+      }
+    });
+
+    insertUserTransaction(usersData);
+    console.log(`Inserted ${usersData.length} users`);
+
+    const insertHub = db.prepare(`
+      INSERT INTO hubs (id, name, type, description, icon, specialization, year, creator_id, rating, color)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    const insertHubMember = db.prepare(`
+      INSERT INTO hub_members (hub_id, user_id, role)
+      VALUES (?, ?, ?)
+    `);
+
+    const insertHubInterest = db.prepare(`
+      INSERT INTO hub_interests (hub_id, interest)
+      VALUES (?, ?)
+    `);
+
+    const insertHubTransaction = db.transaction((hubs) => {
+      for (const hub of hubs) {
+        insertHub.run(
+          hub.id,
+          hub.name,
+          hub.type,
+          hub.description,
+          hub.icon || null,
+          hub.specialization || null,
+          hub.year || null,
+          1,
+          hub.rating || 0.0,
+          hub.color || null
+        );
+
+        insertHubMember.run(hub.id, 1, 'creator');
+
+        if (hub.interests && Array.isArray(hub.interests)) {
+          for (const interest of hub.interests) {
+            insertHubInterest.run(hub.id, interest);
+          }
+        }
+      }
+    });
+
+    insertHubTransaction(hubsData);
+    console.log(`Inserted ${hubsData.length} hubs with interests`);
+
+    console.log('Database seeding completed successfully!');
+  } catch (error) {
+    console.error('Error seeding database:', error);
+    process.exit(1);
+  }
+}
+
+seedDatabase();
