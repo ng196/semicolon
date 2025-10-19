@@ -62,3 +62,22 @@ CREATE TABLE IF NOT EXISTS events (
   color TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS marketplace_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  price REAL NOT NULL,
+  type TEXT NOT NULL,
+  category TEXT NOT NULL,
+  condition TEXT NOT NULL,
+  image TEXT,
+  seller_id INTEGER NOT NULL,
+  seller_name TEXT NOT NULL,
+  seller_avatar TEXT,
+  seller_rating REAL DEFAULT 0,
+  liked INTEGER DEFAULT 0,
+  posted_at TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (seller_id) REFERENCES users(id)
+);

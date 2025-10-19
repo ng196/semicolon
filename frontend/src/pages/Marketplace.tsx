@@ -1,13 +1,53 @@
-import { useState } from "react";
-import { Plus, Search, Filter, Heart, MessageCircle, Star } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Search, Filter, Heart, MessageCircle, Star, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CategoryBadge } from "@/components/CategoryBadge";
-import marketplaceData from "@/data/marketplace.json";
+import { marketplaceApi } from "@/services/api";
+
+interface MarketplaceItem {
+  id: string | number;
+  title: string;
+  description: string;
+  price: number;
+  type: string;
+  category: string;
+  condition: string;
+  image: string;
+  seller: {
+    id: number;
+    name: string;
+    avatar: string;
+    rating: number;
+  };
+  liked: number;
+  postedAt: string;
+}
 
 export default function Marketplace() {
+  const [items, setItems] = useState<MarketplaceItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadItems();
+  }, []);
+
+  const loadItems = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await marketplaceApi.getAll();
+      setItems(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load items');
+      console.error('Error loading items:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <header className="border-b border-border bg-card">
@@ -90,8 +130,31 @@ export default function Marketplace() {
           </div>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {marketplaceData.map((item) => (
+        {loading && (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-2 text-muted-foreground">Loading items...</span>
+          </div>
+        )}
+
+        {error && (
+          <Card className="p-6 border-red-200 bg-red-50">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-red-600" />
+              <div>
+                <p className="font-medium text-red-900">Failed to load items</p>
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+              <Button onClick={loadItems} variant="outline" size="sm" className="ml-auto">
+                Retry
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {!loading && !error && (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {items.map((item) => (
             <Card key={item.id} className="group overflow-hidden transition-all hover:shadow-lg">
               <div className="relative">
                 <img
@@ -145,17 +208,17 @@ export default function Marketplace() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <img
-                      src={item.seller.avatar}
-                      alt={item.seller.name}
+                      src={item.seller_avatar}
+                      alt={item.seller_name}
                       className="h-8 w-8 rounded-full"
                     />
                     <div>
                       <p className="text-sm font-medium text-foreground">
-                        {item.seller.name}
+                        {item.seller_name}
                       </p>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                        <span>{item.seller.rating}</span>
+                        <span>{item.seller_rating}</span>
                       </div>
                     </div>
                   </div>
@@ -175,29 +238,26 @@ export default function Marketplace() {
             </Card>
           ))}
         </div>
+        )}
 
-        <div className="mt-8 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Showing 1-6 of 24 items
-          </p>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled>
-              Previous
-            </Button>
-            <Button variant="outline" size="sm" className="bg-primary text-primary-foreground">
-              1
-            </Button>
-            <Button variant="outline" size="sm">
-              2
-            </Button>
-            <Button variant="outline" size="sm">
-              3
-            </Button>
-            <Button variant="outline" size="sm">
-              Next
-            </Button>
+        {!loading && !error && (
+          <div className="mt-8 flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              Showing 1-{items.length} of {items.length} items
+            </p>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" disabled>
+                Previous
+              </Button>
+              <Button variant="outline" size="sm" className="bg-primary text-primary-foreground">
+                1
+              </Button>
+              <Button variant="outline" size="sm">
+                Next
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

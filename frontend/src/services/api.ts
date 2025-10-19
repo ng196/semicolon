@@ -95,3 +95,26 @@ export const eventsApi = {
     return handleResponse(response);
   },
 };
+
+export const marketplaceApi = {
+  getAll: async () => {
+    const response = await fetch(`${API_BASE_URL}/marketplace`);
+    return handleResponse(response);
+  },
+
+  getById: async (id: string | number) => {
+    const response = await fetch(`${API_BASE_URL}/marketplace/${id}`);
+    return handleResponse(response);
+  },
+
+  create: async (itemData: Partial<HubData>) => {
+    const response = await fetch(`${API_BASE_URL}/marketplace`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(itemData),
+    });
+    return handleResponse(response);
+  },
+};

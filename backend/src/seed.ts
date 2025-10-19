@@ -17,12 +17,15 @@ function seedDatabase() {
     const hubsData = JSON.parse(readFileSync(hubsJsonPath, 'utf-8'));
 
     const eventsJsonPath = join(__dirname, '../../frontend/src/data/events.json');
+    const marketplaceJsonPath = join(__dirname, '../../frontend/src/data/marketplace.json');
     const eventsData = JSON.parse(readFileSync(eventsJsonPath, 'utf-8'));
+    const marketplaceData = JSON.parse(readFileSync(marketplaceJsonPath, 'utf-8'));
 
-    console.log(`Found ${usersData.length} users, ${hubsData.length} hubs, and ${eventsData.length} events`);
+    console.log(`Found ${usersData.length} users, ${hubsData.length} hubs, ${eventsData.length} events, and ${marketplaceData.length} marketplace items`);
 
     db.exec('DELETE FROM hub_interests');
     db.exec('DELETE FROM hub_members');
+    db.exec('DELETE FROM marketplace_items');
     db.exec('DELETE FROM hubs');
     db.exec('DELETE FROM events');
     db.exec('DELETE FROM users');
@@ -121,6 +124,35 @@ function seedDatabase() {
 
     insertEventTransaction(eventsData);
     console.log(`Inserted ${eventsData.length} events`);
+
+    const insertItem = db.prepare(`
+      INSERT INTO marketplace_items (id, title, description, price, type, category, condition, image, seller_id, seller_name, seller_avatar, seller_rating, liked, posted_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    const insertItemTransaction = db.transaction((items) => {
+      for (const item of items) {
+        insertItem.run(
+          item.id,
+          item.title,
+          item.description,
+          item.price,
+          item.type,
+          item.category,
+          item.condition,
+          item.image,
+          item.seller?.id || 1,
+          item.seller?.name || 'Unknown',
+          item.seller?.avatar || null,
+          item.seller?.rating || 0,
+          item.liked ? 1 : 0,
+          item.postedAt || null
+        );
+      }
+    });
+
+    insertItemTransaction(marketplaceData);
+    console.log(`Inserted ${marketplaceData.length} marketplace items`);
 
     console.log('Database seeding completed successfully!');
   } catch (error) {
