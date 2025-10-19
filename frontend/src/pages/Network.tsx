@@ -1,15 +1,50 @@
-import { useState } from "react";
-import { Search, Filter, UserPlus, MessageCircle, Users as UsersIcon } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Filter, UserPlus, MessageCircle, Users as UsersIcon, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import networkData from "@/data/network.json";
+import { usersApi } from "@/services/api";
+
+interface User {
+  id: number;
+  name: string;
+  specialization: string;
+  year: string;
+  avatar: string;
+  online?: boolean;
+  sharedClasses?: string[];
+  attendanceRate?: number;
+  interests?: string[];
+  lastSeen?: string;
+}
 
 export default function Network() {
   const [activeTab, setActiveTab] = useState("my-classes");
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await usersApi.getAll();
+      // Filter out current user (id: 1)
+      setUsers(data.filter((user: User) => user.id !== 1));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load users');
+      console.error('Error loading users:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -89,105 +124,132 @@ export default function Network() {
           </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {networkData.map((user) => (
-            <Card key={user.id} className="group overflow-hidden transition-all hover:shadow-lg">
-              <div className="p-6">
-                <div className="mb-4 flex items-start gap-4">
-                  <div className="relative">
-                    <img
-                      src={user.avatar}
-                      alt={user.name}
-                      className="h-16 w-16 rounded-full"
-                    />
-                    {user.online && (
-                      <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-white bg-green-500" />
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
-                      {user.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {user.specialization} • {user.year}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {user.lastSeen}
-                    </p>
-                  </div>
-                  <div className="flex gap-1">
-                    <Button size="icon" variant="ghost" className="h-8 w-8">
-                      <MessageCircle className="h-4 w-4" />
-                    </Button>
-                    <Button size="icon" variant="ghost" className="h-8 w-8">
-                      <UsersIcon className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
+        {loading && (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-2 text-muted-foreground">Loading network...</span>
+          </div>
+        )}
 
-                <div className="mb-4">
-                  <p className="mb-2 text-sm font-medium text-foreground">
-                    Shared Classes:
-                    <span className="ml-2 text-muted-foreground">
-                      {user.sharedClasses.length} classes
-                    </span>
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {user.sharedClasses.map((cls) => (
-                      <span
-                        key={cls}
-                        className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700"
-                      >
-                        {cls}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <div className="mb-2 flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Attendance Rate:</span>
-                    <span className="font-semibold text-foreground">
-                      {user.attendanceRate}%
-                    </span>
-                  </div>
-                  <Progress
-                    value={user.attendanceRate}
-                    className={`h-2 ${
-                      user.attendanceRate >= 95
-                        ? "[&>div]:bg-green-500"
-                        : user.attendanceRate >= 90
-                        ? "[&>div]:bg-yellow-500"
-                        : "[&>div]:bg-orange-500"
-                    }`}
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <p className="mb-2 text-sm font-medium text-foreground">Interests:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {user.interests.map((interest) => (
-                      <span
-                        key={interest}
-                        className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
-                      >
-                        {interest}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <Button className="w-full" size="sm">
-                  Contact
-                </Button>
+        {error && (
+          <Card className="p-6 border-red-200 bg-red-50">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-red-600" />
+              <div>
+                <p className="font-medium text-red-900">Failed to load network</p>
+                <p className="text-sm text-red-700">{error}</p>
               </div>
-            </Card>
-          ))}
-        </div>
+              <Button onClick={loadUsers} variant="outline" size="sm" className="ml-auto">
+                Retry
+              </Button>
+            </div>
+          </Card>
+        )}
 
-        <div className="mt-8 flex justify-center">
-          <Button variant="outline">Load More</Button>
-        </div>
+        {!loading && !error && (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {users.map((user) => (
+              <Card key={user.id} className="group overflow-hidden transition-all hover:shadow-lg">
+                <div className="p-6">
+                  <div className="mb-4 flex items-start gap-4">
+                    <div className="relative">
+                      <img
+                        src={user.avatar}
+                        alt={user.name}
+                        className="h-16 w-16 rounded-full"
+                      />
+                      {user.online && (
+                        <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-white bg-green-500" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                        {user.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {user.specialization} • {user.year}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {user.lastSeen}
+                      </p>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button size="icon" variant="ghost" className="h-8 w-8">
+                        <MessageCircle className="h-4 w-4" />
+                      </Button>
+                      <Button size="icon" variant="ghost" className="h-8 w-8">
+                        <UsersIcon className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <p className="mb-2 text-sm font-medium text-foreground">
+                      Shared Classes:
+                      <span className="ml-2 text-muted-foreground">
+                        {user.sharedClasses?.length || 0} classes
+                      </span>
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {user.sharedClasses?.map((cls) => (
+                        <span
+                          key={cls}
+                          className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700"
+                        >
+                          {cls}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {user.attendanceRate !== undefined && user.attendanceRate !== null && (
+                    <div className="mb-4">
+                      <div className="mb-2 flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Attendance Rate:</span>
+                        <span className="font-semibold text-foreground">
+                          {user.attendanceRate}%
+                        </span>
+                      </div>
+                      <Progress
+                        value={user.attendanceRate}
+                        className={`h-2 ${user.attendanceRate >= 95
+                            ? "[&>div]:bg-green-500"
+                            : user.attendanceRate >= 90
+                              ? "[&>div]:bg-yellow-500"
+                              : "[&>div]:bg-orange-500"
+                          }`}
+                      />
+                    </div>
+                  )}
+
+                  <div className="mb-4">
+                    <p className="mb-2 text-sm font-medium text-foreground">Interests:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {user.interests?.map((interest) => (
+                        <span
+                          key={interest}
+                          className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
+                        >
+                          {interest}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button className="w-full" size="sm">
+                    Contact
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {!loading && !error && (
+          <div className="mt-8 flex justify-center">
+            <Button variant="outline">Load More</Button>
+          </div>
+        )}
       </div>
     </div>
   );
