@@ -9,3 +9,7 @@ frontend/node_modules/
 files
 
 .eslintignore
+.kiro
+.env
+
+
