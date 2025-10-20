@@ -9,11 +9,11 @@ import marketplaceData from "@/data/marketplace.json";
 
 const quickActions = [
   { title: "Create Project", icon: Plus, color: "bg-blue-500", href: "/hubs" },
-  { title: "Join Club", icon: UsersIcon, color: "bg-purple-500", href: "/hubs" },
+  { title: "Create Club", icon: UsersIcon, color: "bg-purple-500", href: "/clubs" },
+  { title: "Browse Projects", icon: GraduationCap, color: "bg-indigo-500", href: "/hubs" },
   { title: "Create Event", icon: Calendar, color: "bg-green-500", href: "/events" },
   { title: "Sell Item", icon: ShoppingBag, color: "bg-orange-500", href: "/marketplace" },
   { title: "Find Friends", icon: UserPlus, color: "bg-teal-500", href: "/network" },
-  { title: "Submit Request", icon: AlertCircle, color: "bg-red-500", href: "/requests" },
 ];
 
 const recentActivity = [
@@ -44,6 +44,10 @@ export default function Dashboard() {
   const upcomingEvents = eventsData.slice(5, 7);
   const suggestedHubs = hubsData.slice(0, 2);
   const recentMarketplace = marketplaceData.slice(0, 2);
+
+  const handleQuickAction = (href: string) => {
+    window.location.href = href;
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -76,6 +80,7 @@ export default function Dashboard() {
               <Card
                 key={action.title}
                 className="group cursor-pointer transition-all hover:shadow-lg"
+                onClick={() => handleQuickAction(action.href)}
               >
                 <div className="flex flex-col items-center gap-3 p-6">
                   <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${action.color} text-white transition-transform group-hover:scale-110`}>

@@ -12,6 +12,7 @@ import Marketplace from "./pages/Marketplace";
 import Network from "./pages/Network";
 import Requests from "./pages/Requests";
 import NotFound from "./pages/NotFound";
+import { ClubsPage, ClubPage } from "./pages/hubs/clubs";
 // Auth pages (lazy loaded)
 import { lazy, Suspense } from "react";
 import { AuthProvider } from "./pages/auth/contexts/AuthContext";
@@ -155,6 +156,36 @@ const App = () => (
                       <AppSidebar />
                       <div className="flex-1">
                         <Requests />
+                      </div>
+                    </div>
+                  </SidebarProvider>
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/clubs"
+              element={
+                <AuthGuard>
+                  <SidebarProvider>
+                    <div className="flex min-h-screen w-full">
+                      <AppSidebar />
+                      <div className="flex-1">
+                        <ClubsPage />
+                      </div>
+                    </div>
+                  </SidebarProvider>
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/clubs/:id"
+              element={
+                <AuthGuard>
+                  <SidebarProvider>
+                    <div className="flex min-h-screen w-full">
+                      <AppSidebar />
+                      <div className="flex-1">
+                        <ClubPage />
                       </div>
                     </div>
                   </SidebarProvider>

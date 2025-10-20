@@ -6,6 +6,7 @@ import hubRoutes from './src/routes/hubs.js';
 import eventRoutes from './src/routes/events.js';
 import marketplaceRoutes from './src/routes/marketplace.js';
 import requestRoutes from './src/routes/requests.js';
+import clubRoutes from './src/routes/clubs.js';
 import { authMiddleware } from './src/middleware/auth.js';
 
 const app = express();
@@ -27,6 +28,7 @@ app.use('/hubs', authMiddleware, hubRoutes);
 app.use('/events', authMiddleware, eventRoutes);
 app.use('/marketplace', authMiddleware, marketplaceRoutes);
 app.use('/requests', authMiddleware, requestRoutes);
+app.use('/clubs', authMiddleware, clubRoutes);
 
 // app.get('/', (req, res) => {
 //   res.send('Hello World!');

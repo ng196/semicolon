@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, X, Code, Camera, Leaf, Brain, Gamepad, Trees, Smartphone, Users, Building, Lightbulb } from "lucide-react";
+import { Plus, X, Users, Building, Camera, Brain, Gamepad, Trees, Lightbulb, Music, Book } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,21 +7,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { hubsApi } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 import type { LucideIcon } from "lucide-react";
 
 const iconOptions: { value: string; icon: LucideIcon; label: string }[] = [
-    { value: "code", icon: Code, label: "Code" },
+    { value: "users", icon: Users, label: "Users" },
+    { value: "building", icon: Building, label: "Building" },
     { value: "camera", icon: Camera, label: "Camera" },
-    { value: "leaf", icon: Leaf, label: "Leaf" },
     { value: "brain", icon: Brain, label: "Brain" },
     { value: "gamepad", icon: Gamepad, label: "Gamepad" },
     { value: "tree", icon: Trees, label: "Tree" },
-    { value: "smartphone", icon: Smartphone, label: "Smartphone" },
-    { value: "users", icon: Users, label: "Users" },
-    { value: "building", icon: Building, label: "Building" },
     { value: "lightbulb", icon: Lightbulb, label: "Lightbulb" },
+    { value: "music", icon: Music, label: "Music" },
+    { value: "book", icon: Book, label: "Book" },
 ];
 
 const colorOptions = [
@@ -35,34 +35,30 @@ const colorOptions = [
     { value: "orange", label: "Orange", class: "bg-orange-500" },
 ];
 
-const skillOptions = [
-    "Web Development", "Mobile Development", "AI/ML", "Data Science", "Game Development",
-    "UI/UX Design", "Backend Development", "Frontend Development", "Full Stack",
-    "DevOps", "Cloud Computing", "Cybersecurity", "Blockchain", "IoT", "Robotics",
-    "AR/VR", "Computer Vision", "Natural Language Processing", "Database Design",
-    "API Development", "Testing", "Project Management"
+const interestOptions = [
+    "Photography", "Art", "Music", "Sports", "Technology", "Science",
+    "Literature", "Gaming", "Fitness", "Cooking", "Travel", "Environment",
+    "Business", "Volunteering", "Culture", "Dance", "Theater", "Film"
 ];
 
-interface CreateProjectModalProps {
-    onProjectCreated: () => void;
-    buttonText?: string;
-    isClub?: boolean;
+interface CreateClubModalProps {
+    onClubCreated: () => void;
 }
 
-export function CreateProjectModal({ onProjectCreated, buttonText, isClub = false }: CreateProjectModalProps) {
+export function CreateClubModal({ onClubCreated }: CreateClubModalProps) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
-    const entityType = isClub ? "Club" : "Project";
 
     const [formData, setFormData] = useState({
         name: "",
         description: "",
-        icon: "code",
-        specialization: "",
-        year: "",
+        icon: "users",
+        specialization: "All",
+        year: "All Years",
         color: "blue",
-        interests: [] as string[]
+        interests: [] as string[],
+        isPrivate: false
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -71,7 +67,7 @@ export function CreateProjectModal({ onProjectCreated, buttonText, isClub = fals
         if (!formData.name || !formData.description) {
             toast({
                 title: "Missing Information",
-                description: `Please fill in ${entityType.toLowerCase()} name and description.`,
+                description: "Please fill in club name and description.",
                 variant: "destructive"
             });
             return;
@@ -80,32 +76,48 @@ export function CreateProjectModal({ onProjectCreated, buttonText, isClub = fals
         try {
             setLoading(true);
             const userData = JSON.parse(localStorage.getItem('user_data') || '{"id":1}');
-            await hubsApi.create({
-                ...formData,
-                type: entityType,
+            const result = await hubsApi.create({
+                name: formData.name,
+                description: formData.description,
+                icon: formData.icon,
+                specialization: formData.specialization,
+                year: formData.year,
+                color: formData.color,
+                interests: formData.interests,
+                type: "Club",
                 creator_id: userData.id || 1
             });
 
+            // Update club settings if private
+            if (formData.isPrivate && result.id) {
+                const { clubsApi } = await import("@/services/api");
+                await clubsApi.updateSettings(result.id, {
+                    is_private: true,
+                    auto_approve_members: false
+                });
+            }
+
             toast({
-                title: `${entityType} Created!`,
-                description: `Your ${entityType.toLowerCase()} has been created successfully.`,
+                title: "Club Created!",
+                description: "Your club has been created successfully.",
             });
 
             setOpen(false);
             setFormData({
                 name: "",
                 description: "",
-                icon: "code",
-                specialization: "",
-                year: "",
+                icon: "users",
+                specialization: "All",
+                year: "All Years",
                 color: "blue",
-                interests: []
+                interests: [],
+                isPrivate: false
             });
-            onProjectCreated();
+            onClubCreated();
         } catch (error) {
             toast({
                 title: "Error",
-                description: error instanceof Error ? error.message : "Failed to create project",
+                description: error instanceof Error ? error.message : "Failed to create club",
                 variant: "destructive"
             });
         } finally {
@@ -113,19 +125,19 @@ export function CreateProjectModal({ onProjectCreated, buttonText, isClub = fals
         }
     };
 
-    const addSkill = (skill: string) => {
-        if (!formData.interests.includes(skill)) {
+    const addInterest = (interest: string) => {
+        if (!formData.interests.includes(interest)) {
             setFormData(prev => ({
                 ...prev,
-                interests: [...prev.interests, skill]
+                interests: [...prev.interests, interest]
             }));
         }
     };
 
-    const removeSkill = (skill: string) => {
+    const removeInterest = (interest: string) => {
         setFormData(prev => ({
             ...prev,
-            interests: prev.interests.filter(i => i !== skill)
+            interests: prev.interests.filter(i => i !== interest)
         }));
     };
 
@@ -134,38 +146,37 @@ export function CreateProjectModal({ onProjectCreated, buttonText, isClub = fals
             <DialogTrigger asChild>
                 <Button className="bg-primary hover:bg-primary/90">
                     <Plus className="mr-2 h-4 w-4" />
-                    {buttonText || `Create ${entityType}`}
+                    Create Club
                 </Button>
             </DialogTrigger>
+
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Create New {entityType}</DialogTitle>
+                    <DialogTitle>Create New Club</DialogTitle>
                     <p className="text-sm text-muted-foreground">
-                        {isClub
-                            ? "Start a new club and build a community around shared interests."
-                            : "Start a new project and find collaborators to bring your ideas to life."}
+                        Start a new club and build a community around shared interests.
                     </p>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="name">Project Name *</Label>
+                        <Label htmlFor="name">Club Name *</Label>
                         <Input
                             id="name"
                             value={formData.name}
                             onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                            placeholder="Enter your project name"
+                            placeholder="e.g., Photography Club, Coding Society"
                             required
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="description">Project Description *</Label>
+                        <Label htmlFor="description">Description *</Label>
                         <Textarea
                             id="description"
                             value={formData.description}
                             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                            placeholder="Describe your project, what you're building, and what kind of collaborators you're looking for"
+                            placeholder="Describe what your club is about and what activities you'll do..."
                             rows={4}
                             required
                         />
@@ -173,7 +184,7 @@ export function CreateProjectModal({ onProjectCreated, buttonText, isClub = fals
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label>Project Icon</Label>
+                            <Label>Club Icon</Label>
                             <Select value={formData.icon} onValueChange={(value) => setFormData(prev => ({ ...prev, icon: value }))}>
                                 <SelectTrigger>
                                     <SelectValue />
@@ -214,86 +225,55 @@ export function CreateProjectModal({ onProjectCreated, buttonText, isClub = fals
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="specialization">Target Specialization</Label>
-                            <Input
-                                id="specialization"
-                                value={formData.specialization}
-                                onChange={(e) => setFormData(prev => ({ ...prev, specialization: e.target.value }))}
-                                placeholder="e.g., CS, Design, Engineering, All"
-                            />
-                            <p className="text-xs text-muted-foreground">
-                                What field of study is this project most relevant to?
-                            </p>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="year">Target Year Level</Label>
-                            <Select value={formData.year} onValueChange={(value) => setFormData(prev => ({ ...prev, year: value }))}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select year level" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="All Years">All Years</SelectItem>
-                                    <SelectItem value="1st Year">1st Year</SelectItem>
-                                    <SelectItem value="2nd Year">2nd Year</SelectItem>
-                                    <SelectItem value="3rd Year">3rd Year</SelectItem>
-                                    <SelectItem value="4th Year">4th Year</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-
                     <div className="space-y-2">
-                        <Label>Required Skills & Technologies</Label>
-                        <Select onValueChange={addSkill}>
+                        <Label>Interests & Activities</Label>
+                        <Select onValueChange={addInterest}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Add skills needed for this project" />
+                                <SelectValue placeholder="Add interests..." />
                             </SelectTrigger>
                             <SelectContent>
-                                {skillOptions.filter(skill => !formData.interests.includes(skill)).map((skill) => (
-                                    <SelectItem key={skill} value={skill}>
-                                        {skill}
+                                {interestOptions.map((interest) => (
+                                    <SelectItem key={interest} value={interest}>
+                                        {interest}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
-
                         {formData.interests.length > 0 && (
                             <div className="flex flex-wrap gap-2 mt-2">
-                                {formData.interests.map((skill) => (
-                                    <Badge key={skill} variant="secondary" className="cursor-pointer">
-                                        {skill}
+                                {formData.interests.map((interest) => (
+                                    <Badge key={interest} variant="secondary" className="gap-1">
+                                        {interest}
                                         <X
-                                            className="ml-1 h-3 w-3"
-                                            onClick={() => removeSkill(skill)}
+                                            className="h-3 w-3 cursor-pointer"
+                                            onClick={() => removeInterest(interest)}
                                         />
                                     </Badge>
                                 ))}
                             </div>
                         )}
-                        <p className="text-xs text-muted-foreground">
-                            Add skills and technologies to help others understand what expertise you're looking for.
-                        </p>
                     </div>
 
-                    <div className="bg-muted p-4 rounded-lg">
-                        <h4 className="font-medium mb-2">💡 Project Tips</h4>
-                        <ul className="text-sm text-muted-foreground space-y-1">
-                            <li>• Be specific about what you're building and what help you need</li>
-                            <li>• Include the technologies or skills you're looking for</li>
-                            <li>• Mention if this is for a class, personal project, or startup idea</li>
-                            <li>• Consider what you can offer to collaborators in return</li>
-                        </ul>
+                    <div className="flex items-center justify-between p-4 border rounded-lg">
+                        <div className="space-y-0.5">
+                            <Label htmlFor="private">Private Club</Label>
+                            <p className="text-sm text-muted-foreground">
+                                Require approval for new members to join
+                            </p>
+                        </div>
+                        <Switch
+                            id="private"
+                            checked={formData.isPrivate}
+                            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isPrivate: checked }))}
+                        />
                     </div>
 
-                    <div className="flex justify-end gap-2 pt-4">
+                    <div className="flex justify-end gap-2 pt-4 border-t">
                         <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                             Cancel
                         </Button>
                         <Button type="submit" disabled={loading}>
-                            {loading ? "Creating..." : `Create ${entityType}`}
+                            {loading ? "Creating..." : "Create Club"}
                         </Button>
                     </div>
                 </form>

@@ -6,15 +6,22 @@ export const createHub = (req: Request, res: Response) => {
     const { name, type, description, creator_id, icon, specialization, year, color, interests } = req.body;
     const result = model.createHub(name, type, description, creator_id, { icon, specialization, year, color });
     const hubId = result.lastInsertRowid;
-    
-    model.addHubMember(hubId as number, creator_id, 'creator');
-    
+
+    // Add creator as leader for clubs, creator for projects
+    const creatorRole = type === 'Club' ? 'leader' : 'creator';
+    model.addHubMember(hubId as number, creator_id, creatorRole);
+
+    // Create club settings if this is a club
+    if (type === 'Club') {
+      model.createClubSettings(hubId as number, false, true);
+    }
+
     if (interests && Array.isArray(interests)) {
       interests.forEach((interest: string) => {
         model.addHubInterest(hubId as number, interest);
       });
     }
-    
+
     res.status(201).json({ id: hubId, message: 'Hub created successfully' });
   } catch (error) {
     res.status(400).json({ error: (error as Error).message });

@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Filter, Loader2, AlertCircle } from "lucide-react";
+import { Search, Loader2, AlertCircle, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { hubsApi } from "@/services/api";
-import { ProjectCard } from "./ProjectCard";
-import { CreateProjectModal } from "./CreateProjectModal";
+import { ProjectCard } from "../ProjectCard";
+import { CreateClubModal } from "./CreateClubModal";
 
-interface Hub {
+interface Club {
     id: string | number;
     name: string;
     type: string;
@@ -24,10 +24,10 @@ interface Hub {
     color: string;
 }
 
-export default function HubsPage() {
+export default function ClubsPage() {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState("projects");
-    const [hubs, setHubs] = useState<Hub[]>([]);
+    const [activeTab, setActiveTab] = useState("clubs");
+    const [hubs, setHubs] = useState<Club[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
@@ -52,9 +52,9 @@ export default function HubsPage() {
         }
     };
 
-    // Always show only projects on this page
-    const projects = hubs.filter(hub => {
-        if (hub.type !== "Project") return false;
+    // Always show only clubs on this page
+    const clubs = hubs.filter(hub => {
+        if (hub.type !== "Club") return false;
 
         // Filter by search term
         if (searchTerm && !hub.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -82,12 +82,30 @@ export default function HubsPage() {
     const totalClubs = hubs.filter(hub => hub.type === "Club").length;
 
     const handleTabChange = (value: string) => {
-        if (value === "clubs") {
-            navigate('/clubs');
+        if (value === "projects") {
+            navigate('/hubs');
         } else {
             setActiveTab(value);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="flex h-[50vh] items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex h-[50vh] flex-col items-center justify-center gap-4">
+                <AlertCircle className="h-12 w-12 text-destructive" />
+                <p className="text-lg text-muted-foreground">{error}</p>
+                <Button onClick={loadClubs}>Try Again</Button>
+            </div>
+        );
+    }
 
     return (
         <div className="flex min-h-screen w-full flex-col bg-background">
@@ -101,7 +119,7 @@ export default function HubsPage() {
                             </p>
                         </div>
                         <div className="flex gap-2">
-                            <CreateProjectModal onProjectCreated={loadHubs} />
+                            <CreateClubModal onClubCreated={loadHubs} />
                         </div>
                     </div>
 
@@ -121,7 +139,7 @@ export default function HubsPage() {
                         <div className="relative flex-1 max-w-md">
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                             <Input
-                                placeholder={`Search ${activeTab}...`}
+                                placeholder="Search clubs..."
                                 className="pl-9"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -164,7 +182,7 @@ export default function HubsPage() {
                 {loading && (
                     <div className="flex justify-center items-center py-12">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                        <span className="ml-2 text-muted-foreground">Loading projects...</span>
+                        <span className="ml-2 text-muted-foreground">Loading clubs...</span>
                     </div>
                 )}
 
@@ -173,7 +191,7 @@ export default function HubsPage() {
                         <div className="flex items-center gap-3">
                             <AlertCircle className="h-5 w-5 text-red-600" />
                             <div>
-                                <p className="font-medium text-red-900">Failed to load projects</p>
+                                <p className="font-medium text-red-900">Failed to load clubs</p>
                                 <p className="text-sm text-red-700">{error}</p>
                             </div>
                             <Button onClick={loadHubs} variant="outline" size="sm" className="ml-auto">
@@ -185,28 +203,33 @@ export default function HubsPage() {
 
                 {!loading && !error && (
                     <>
-                        {projects.length === 0 ? (
+                        {clubs.length === 0 ? (
                             <Card className="p-12 text-center">
-                                <h3 className="text-lg font-semibold mb-2">No Projects Found</h3>
+                                <h3 className="text-lg font-semibold mb-2">No Clubs Found</h3>
                                 <p className="text-muted-foreground mb-4">
                                     {searchTerm || specializationFilter !== "all" || yearFilter !== "all"
-                                        ? "Try adjusting your filters to see more projects."
-                                        : "Be the first to create a project and find collaborators!"
+                                        ? "Try adjusting your filters to see more clubs."
+                                        : "Be the first to create a club and build a community!"
                                     }
                                 </p>
-                                <CreateProjectModal onProjectCreated={loadHubs} />
+                                <CreateClubModal onClubCreated={loadHubs} />
                             </Card>
                         ) : (
                             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                                {projects.map((project) => (
-                                    <ProjectCard key={project.id} project={project} />
+                                {clubs.map((club) => (
+                                    <ProjectCard 
+                                        key={club.id}
+                                        project={club} 
+                                        buttonLabel="View Club"
+                                        onViewClick={() => navigate(`/clubs/${club.id}`)}
+                                    />
                                 ))}
                             </div>
                         )}
                     </>
                 )}
 
-                {!loading && !error && projects.length > 0 && (
+                {!loading && !error && clubs.length > 0 && (
                     <div className="mt-8 flex justify-center">
                         <Button variant="outline">Load More</Button>
                     </div>

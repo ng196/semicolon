@@ -32,15 +32,17 @@ interface Project {
 
 interface ProjectCardProps {
     project: Project;
+    buttonLabel?: string;
+    onViewClick?: () => void;
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, buttonLabel = "View Project", onViewClick }: ProjectCardProps) {
     const navigate = useNavigate();
     const IconComponent = iconMap[project.icon] || Code;
 
-    const handleViewProject = () => {
+    const handleViewProject = onViewClick || (() => {
         navigate(`/hubs?view=project&id=${project.id}`);
-    };
+    });
 
     return (
         <Card className="group overflow-hidden transition-all hover:shadow-lg cursor-pointer" onClick={handleViewProject}>
@@ -125,7 +127,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                         }}
                     >
                         <ExternalLink className="mr-1 h-3 w-3" />
-                        View Project
+                        {buttonLabel}
                     </Button>
                 </div>
             </div>

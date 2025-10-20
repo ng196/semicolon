@@ -103,3 +103,55 @@ CREATE TABLE IF NOT EXISTS requests (
   FOREIGN KEY (submitter_id) REFERENCES users(id)
 );
 
+-- Club-specific settings
+CREATE TABLE IF NOT EXISTS club_settings (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  hub_id INTEGER NOT NULL UNIQUE,
+  is_private BOOLEAN DEFAULT 0,
+  auto_approve_members BOOLEAN DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (hub_id) REFERENCES hubs(id) ON DELETE CASCADE
+);
+
+-- Join requests for private clubs
+CREATE TABLE IF NOT EXISTS club_join_requests (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  club_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  status TEXT DEFAULT 'pending',
+  message TEXT,
+  requested_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  reviewed_at DATETIME,
+  reviewed_by INTEGER,
+  FOREIGN KEY (club_id) REFERENCES hubs(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (reviewed_by) REFERENCES users(id),
+  UNIQUE(club_id, user_id)
+);
+
+-- Club posts
+CREATE TABLE IF NOT EXISTS club_posts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  club_id INTEGER NOT NULL,
+  author_id INTEGER NOT NULL,
+  title TEXT,
+  content TEXT NOT NULL,
+  type TEXT DEFAULT 'general',
+  pinned BOOLEAN DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (club_id) REFERENCES hubs(id) ON DELETE CASCADE,
+  FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Link events to clubs
+CREATE TABLE IF NOT EXISTS club_events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  event_id INTEGER NOT NULL,
+  club_id INTEGER NOT NULL,
+  visibility TEXT DEFAULT 'public',
+  target_audience TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+  FOREIGN KEY (club_id) REFERENCES hubs(id) ON DELETE CASCADE
+);

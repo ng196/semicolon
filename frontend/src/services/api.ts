@@ -346,3 +346,80 @@ export const authApi = {
 // Export the API client for advanced usage
 export { apiClient };
 
+
+// Clubs API
+export const clubsApi = {
+  // Club settings
+  getSettings: async (clubId: string | number) => {
+    return apiClient.get(`/clubs/${clubId}/settings`);
+  },
+
+  updateSettings: async (clubId: string | number, settings: { is_private?: boolean; auto_approve_members?: boolean }) => {
+    return apiClient.put(`/clubs/${clubId}/settings`, settings);
+  },
+
+  // Membership
+  joinPublicClub: async (clubId: string | number) => {
+    return apiClient.post(`/clubs/${clubId}/join`);
+  },
+
+  leaveClub: async (clubId: string | number) => {
+    return apiClient.delete(`/clubs/${clubId}/leave`);
+  },
+
+  updateMemberRole: async (clubId: string | number, userId: number, role: string) => {
+    return apiClient.put(`/clubs/${clubId}/members/${userId}/role`, { role });
+  },
+
+  // Join requests
+  requestToJoin: async (clubId: string | number, message?: string) => {
+    return apiClient.post(`/clubs/${clubId}/join-requests`, { message });
+  },
+
+  getJoinRequests: async (clubId: string | number, status?: string) => {
+    const query = status ? `?status=${status}` : '';
+    return apiClient.get(`/clubs/${clubId}/join-requests${query}`);
+  },
+
+  approveJoinRequest: async (clubId: string | number, requestId: number) => {
+    return apiClient.put(`/clubs/${clubId}/join-requests/${requestId}/approve`);
+  },
+
+  rejectJoinRequest: async (clubId: string | number, requestId: number) => {
+    return apiClient.put(`/clubs/${clubId}/join-requests/${requestId}/reject`);
+  },
+
+  // Club posts
+  getPosts: async (clubId: string | number) => {
+    return apiClient.get(`/clubs/${clubId}/posts`);
+  },
+
+  createPost: async (clubId: string | number, post: { title?: string; content: string; type?: string }) => {
+    return apiClient.post(`/clubs/${clubId}/posts`, post);
+  },
+
+  updatePost: async (clubId: string | number, postId: number, post: { title?: string; content?: string; type?: string }) => {
+    return apiClient.put(`/clubs/${clubId}/posts/${postId}`, post);
+  },
+
+  deletePost: async (clubId: string | number, postId: number) => {
+    return apiClient.delete(`/clubs/${clubId}/posts/${postId}`);
+  },
+
+  pinPost: async (clubId: string | number, postId: number, pinned: boolean) => {
+    return apiClient.put(`/clubs/${clubId}/posts/${postId}/pin`, { pinned });
+  },
+
+  // Club events
+  getEvents: async (clubId: string | number) => {
+    return apiClient.get(`/clubs/${clubId}/events`);
+  },
+
+  createEvent: async (clubId: string | number, event: { event_id: number; visibility?: string; target_audience?: string }) => {
+    return apiClient.post(`/clubs/${clubId}/events`, event);
+  },
+
+  updateEventVisibility: async (clubId: string | number, eventId: number, visibility: string) => {
+    return apiClient.put(`/clubs/${clubId}/events/${eventId}/visibility`, { visibility });
+  },
+};
