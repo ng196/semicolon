@@ -38,49 +38,71 @@
     - Add proper error messaging for failed logins
     - _Requirements: 2.4, 6.1, 6.5_
 
-- [ ] 4. Build signup functionality
-  - [x] 4.1 Create Signup page component
-    - Implement registration form with existing components
-    - Add email, password, and confirm password fields
-    - Integrate terms acceptance checkbox
-    - _Requirements: 1.1, 1.3, 1.4_
+- [ ] 4. Build real-time validation system
+  - [x] 4.1 Create email validation service
+    - Implement async email format validation
+    - Add real-time email uniqueness checking API endpoint
+    - Create validation UI feedback components
+    - Add debouncing to prevent excessive API calls
+    - _Requirements: 1.2, 3.2_
 
-  - [x] 4.2 Implement signup validation and API integration
-    - Add comprehensive form validation
-    - Implement user registration API calls
-    - Add email verification flow
-    - _Requirements: 1.2, 1.5, 5.1_
+  - [x] 4.2 Create username validation service
+    - Implement async username format validation
+    - Add real-time username uniqueness checking API endpoint
+    - Create validation UI feedback with loading states
+    - Add debouncing for performance optimization
+    - _Requirements: 1.3, 3.3_
 
-  - [ ] 4.3 Add campus email validation
-    - Implement email domain validation
-    - Add verification requirements for non-campus emails
-    - Create verification status handling
-    - _Requirements: 5.1, 5.2, 5.3_
+  - [ ] 4.3 Build validation feedback components
+    - Create reusable validation indicator components
+    - Implement success/error/loading states with animations
+    - Add inline validation messages
+    - Integrate with existing form components
+    - _Requirements: 1.4, 3.7_
 
-- [ ] 5. Create onboarding flow
-  - [ ] 5.1 Build multi-step onboarding wizard
-    - Create onboarding container with step navigation
-    - Implement progress indicator using existing components
-    - Add step validation and navigation controls
-    - _Requirements: 3.1, 3.5_
+- [ ] 5. Create onboarding wizard with temporary storage
+  - [x] 5.1 Build onboarding storage service
+    - Create localStorage-based temporary storage system
+    - Implement 10-minute auto-cleanup with activity reset
+    - Add data encryption/obfuscation for security
+    - Create storage cleanup triggers (success, timeout, manual)
+    - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-  - [ ] 5.2 Implement basic info collection step
-    - Create form for name, username, year, and specialization
-    - Use existing Select components for dropdowns
-    - Add validation for required fields
-    - _Requirements: 3.2_
+  - [x] 5.2 Create animated wizard container
+    - Build multi-step wizard with smooth transitions
+    - Implement progress indicator with step validation
+    - Add slide animations between steps
+    - Create step navigation controls with validation checks
+    - _Requirements: 3.1, 3.7, 4.1_
 
-  - [ ] 5.3 Build interest selection step
-    - Create interest selection interface with checkboxes
-    - Implement category-based interest organization
-    - Add search and filter functionality for interests
-    - _Requirements: 3.3_
+  - [x] 5.3 Implement Step 1: Email & Password
+    - Create email and password collection form
+    - Add real-time email format and uniqueness validation
+    - Implement password strength validation
+    - Add confirm password matching validation
+    - Store data temporarily on input changes
+    - _Requirements: 1.2, 1.3, 3.2, 5.1_
 
-  - [ ] 5.4 Add profile setup and avatar selection
-    - Implement avatar upload functionality
-    - Provide default avatar options using existing patterns
-    - Add profile preview and confirmation
-    - _Requirements: 3.4_
+  - [x] 5.4 Implement Step 2: Username & Name
+    - Create username and name collection form
+    - Add real-time username uniqueness validation
+    - Implement name field validation
+    - Continue temporary storage of all data
+    - _Requirements: 1.3, 3.3, 5.1_
+
+  - [x] 5.5 Implement Step 3: Profile Details (Optional)
+    - Create specialization dropdown with predefined options
+    - Add year selection dropdown
+    - Make fields optional with skip functionality
+    - Continue temporary storage pattern
+    - _Requirements: 3.4, 4.2, 4.3, 5.1_
+
+  - [x] 5.6 Implement Step 4: Personalization (Optional)
+    - Create interest selection with checkboxes and categories
+    - Add avatar upload with default options
+    - Implement final registration submission
+    - Clear temporary storage on successful completion
+    - _Requirements: 3.5, 4.4, 5.3_
 
 - [ ] 6. Implement route protection and navigation
   - [x] 6.1 Create AuthGuard component
@@ -127,18 +149,26 @@
     - Create user-friendly error messages
     - _Requirements: 6.1, 6.2, 6.5_
 
-- [ ] 9. Backend authentication integration
-  - [x] 9.1 Extend user API endpoints
-    - Add authentication endpoints to existing user routes
-    - Implement JWT token generation and validation
-    - Add password hashing and verification
-    - _Requirements: 1.2, 2.2, 4.1_
+- [ ] 9. Backend validation and registration endpoints
+  - [ ] 9.1 Create validation API endpoints
+    - Add POST /api/auth/validate-email endpoint
+    - Add POST /api/auth/validate-username endpoint
+    - Implement rate limiting to prevent enumeration attacks
+    - Add proper error handling and responses
+    - _Requirements: 1.2, 1.3_
 
-  - [x] 9.2 Add authentication middleware
-    - Create JWT verification middleware
-    - Protect existing API endpoints as needed
-    - Implement session management
-    - _Requirements: 4.3, 5.4_
+  - [ ] 9.2 Implement complete registration endpoint
+    - Create POST /api/auth/register endpoint for wizard completion
+    - Handle all required and optional fields from wizard
+    - Implement proper validation and error responses
+    - Add user creation with proper password hashing
+    - _Requirements: 1.5, 1.6, 3.6_
+
+  - [x] 9.3 Extend existing authentication middleware
+    - Ensure JWT verification middleware works with new endpoints
+    - Add proper session management
+    - Integrate with existing protected routes
+    - _Requirements: 2.2, 2.5_
 
 - [ ] 10. Testing and validation
   - [ ] 10.1 Test complete authentication flow

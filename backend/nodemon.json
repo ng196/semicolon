@@ -1,8 +1,18 @@
 {
-  "watch": ["."],
+  "watch": [
+    "src",
+    "routes",
+    "*.ts",
+    "*.js"
+  ],
   "ext": "ts,js",
-  "ignore": ["**/*.test.js", "**/*.test.ts", "node_modules"],
+  "ignore": [
+    "**/*.test.js",
+    "**/*.test.ts",
+    "node_modules/**/*"
+  ],
   "exec": "node --loader ts-node/esm server.ts",
+  "legacyWatch": true,
   "env": {
     "NODE_ENV": "development"
   }

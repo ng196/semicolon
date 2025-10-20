@@ -164,8 +164,12 @@ class ApiClient {
     });
   }
 
-  async delete(endpoint: string, options: ApiRequestOptions = {}) {
-    return this.makeRequest(endpoint, { ...options, method: 'DELETE' });
+  async delete(endpoint: string, data?: any, options: ApiRequestOptions = {}) {
+    return this.makeRequest(endpoint, {
+      ...options,
+      method: 'DELETE',
+      body: data ? JSON.stringify(data) : undefined,
+    });
   }
 }
 
@@ -201,6 +205,18 @@ export const hubsApi = {
 
   delete: async (id: string | number) => {
     return apiClient.delete(`/hubs/${id}`);
+  },
+
+  getMembers: async (id: string | number) => {
+    return apiClient.get(`/hubs/${id}/members`);
+  },
+
+  addMember: async (id: string | number, memberData: { user_id: number; role?: string }) => {
+    return apiClient.post(`/hubs/${id}/members`, memberData);
+  },
+
+  removeMember: async (id: string | number, memberData: { user_id: number }) => {
+    return apiClient.delete(`/hubs/${id}/members`, memberData);
   },
 };
 

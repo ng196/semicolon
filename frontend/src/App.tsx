@@ -20,6 +20,7 @@ import { AuthGuard, GuestGuard } from "./pages/auth/components/AuthGuard";
 const Login = lazy(() => import("./pages/auth/Login"));
 const Signup = lazy(() => import("./pages/auth/Signup"));
 const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
+import { OnboardingPage } from "./pages/auth/onboarding/OnboardingPage";
 
 const queryClient = new QueryClient();
 
@@ -46,9 +47,7 @@ const App = () => (
               path="/auth/signup"
               element={
                 <GuestGuard>
-                  <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
-                    <Signup />
-                  </Suspense>
+                  <OnboardingPage />
                 </GuestGuard>
               }
             />
@@ -59,6 +58,14 @@ const App = () => (
                   <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
                     <ForgotPassword />
                   </Suspense>
+                </GuestGuard>
+              }
+            />
+            <Route
+              path="/auth/onboarding"
+              element={
+                <GuestGuard>
+                  <OnboardingPage />
                 </GuestGuard>
               }
             />

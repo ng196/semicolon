@@ -25,6 +25,13 @@ export interface SignupData {
     password: string;
     confirmPassword: string;
     acceptTerms: boolean;
+    // Extended onboarding data
+    username?: string;
+    name?: string;
+    specialization?: string;
+    year?: string;
+    interests?: string[];
+    avatar?: string;
 }
 
 export interface AuthContextType {
@@ -108,26 +115,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 throw new Error(errorData.error || 'Login failed');
             }
 
-            const data = await response.json();
-            const response_formatted = {
-                success: true,
-                data: data
-            };
+            const { token, user: userData } = await response.json();
 
-            if (response_formatted.success) {
-                const { token, user: userData } = response_formatted.data;
+            // Store token and user data
+            localStorage.setItem('auth_token', token);
+            localStorage.setItem('user_data', JSON.stringify(userData));
 
-                // Store token and user data
-                localStorage.setItem('auth_token', token);
-                localStorage.setItem('user_data', JSON.stringify(userData));
-
-                // Remember me is handled by backend (longer token expiry)
-                // No need to store anything extra on frontend
-
-                setUser(userData);
-            } else {
-                throw new Error(response.message || 'Login failed');
-            }
+            setUser(userData);
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Login failed';
             setError(errorMessage);
@@ -142,34 +136,74 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setLoading(true);
             setError(null);
 
-            // Call real backend API
+            // Create user with basic required fields only
+            const signupData = {
+                email: userData.email,
+                password: userData.password,
+                username: userData.username || userData.email.split('@')[0],
+                name: userData.name || userData.username || userData.email.split('@')[0]
+            };
+
+            console.log('Attempting signup with:', signupData);
+
             const response = await fetch('http://localhost:3000/auth/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userData),
+                body: JSON.stringify(signupData),
             });
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ error: 'Signup failed' }));
+                const errorText = await response.text();
+                console.error('Signup failed:', response.status, errorText);
+                let errorData;
+                try {
+                    errorData = JSON.parse(errorText);
+                } catch {
+                    errorData = { error: `Signup failed: ${response.status}` };
+                }
                 throw new Error(errorData.error || 'Signup failed');
             }
 
-            const data = await response.json();
-            const response_formatted = {
-                success: true,
-                data: data
-            };
+            const { token, user: newUser } = await response.json();
+            console.log('Signup successful:', newUser);
 
-            if (response_formatted.success) {
-                const { token, user: newUser } = response_formatted.data;
+            // Store token and user data immediately
+            localStorage.setItem('auth_token', token);
+            localStorage.setItem('user_data', JSON.stringify(newUser));
+            setUser(newUser);
 
-                // Store token and user data
-                localStorage.setItem('auth_token', token);
-                localStorage.setItem('user_data', JSON.stringify(newUser));
+            // Update profile with additional data in background (don't block signup)
+            if (userData.specialization || userData.year || userData.interests?.length || userData.avatar) {
+                const profileData = {
+                    specialization: userData.specialization || '',
+                    year: userData.year || '',
+                    interests: userData.interests || [],
+                    avatar: userData.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.username || userData.email}`
+                };
 
-                setUser(newUser);
-            } else {
-                throw new Error(response.message || 'Signup failed');
+                console.log('Updating profile in background:', profileData);
+
+                fetch('http://localhost:3000/auth/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(profileData),
+                })
+                    .then(async (profileResponse) => {
+                        if (profileResponse.ok) {
+                            const updatedUser = await profileResponse.json();
+                            console.log('Profile updated successfully:', updatedUser);
+                            localStorage.setItem('user_data', JSON.stringify(updatedUser));
+                            setUser(updatedUser);
+                        } else {
+                            console.warn('Profile update failed:', profileResponse.status);
+                        }
+                    })
+                    .catch((profileError) => {
+                        console.error('Profile update error:', profileError);
+                    });
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Signup failed';
