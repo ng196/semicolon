@@ -30,4 +30,7 @@ router.post('/:id/join', clubController.joinPublicClub);
 router.delete('/:id/leave', clubController.leaveClub);
 router.put('/:id/members/:userId/role', clubController.updateMemberRole);
 
+// Delete club
+router.delete('/:id', clubController.deleteClub);
+
 export default router;

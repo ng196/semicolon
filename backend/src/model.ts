@@ -112,6 +112,19 @@ export const getHubMembers = (hub_id: number) => {
   return stmt.all(hub_id);
 };
 
+export const checkHubMembership = (hub_id: number, user_id: number) => {
+  const stmt = db.prepare(`
+    SELECT hm.role, hm.joined_at
+    FROM hub_members hm
+    WHERE hm.hub_id = ? AND hm.user_id = ?
+  `);
+  const result = stmt.get(hub_id, user_id);
+  if (result) {
+    return { isMember: true, role: (result as any).role, joinedAt: (result as any).joined_at };
+  }
+  return { isMember: false };
+};
+
 // Hub Interests
 export const addHubInterest = (hub_id: number, interest: string) => {
   const stmt = db.prepare('INSERT INTO hub_interests (hub_id, interest) VALUES (?, ?)');

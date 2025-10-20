@@ -475,3 +475,22 @@ export const updateMemberRole = (req: Request, res: Response) => {
         res.status(400).json({ error: (error as Error).message });
     }
 };
+
+export const deleteClub = (req: Request, res: Response) => {
+    try {
+        const clubId = parseInt(req.params.id!);
+        const userId = req.user?.userId!;
+
+        // Only the leader can delete the club
+        const userRole = model.getUserClubRole(clubId, userId);
+        if (userRole !== 'leader') {
+            return res.status(403).json({ error: 'Only the club leader can delete the club' });
+        }
+
+        // Delete the club (CASCADE will handle related records)
+        model.deleteHub(clubId);
+        res.json({ success: true, message: 'Club deleted successfully' });
+    } catch (error) {
+        res.status(400).json({ error: (error as Error).message });
+    }
+};

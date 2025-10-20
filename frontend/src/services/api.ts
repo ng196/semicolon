@@ -211,6 +211,10 @@ export const hubsApi = {
     return apiClient.get(`/hubs/${id}/members`);
   },
 
+  checkMembership: async (id: string | number, userId: number) => {
+    return apiClient.get(`/hubs/${id}/members/${userId}/check`);
+  },
+
   addMember: async (id: string | number, memberData: { user_id: number; role?: string }) => {
     return apiClient.post(`/hubs/${id}/members`, memberData);
   },
@@ -421,5 +425,10 @@ export const clubsApi = {
 
   updateEventVisibility: async (clubId: string | number, eventId: number, visibility: string) => {
     return apiClient.put(`/clubs/${clubId}/events/${eventId}/visibility`, { visibility });
+  },
+
+  // Delete club
+  deleteClub: async (clubId: string | number) => {
+    return apiClient.delete(`/clubs/${clubId}`);
   },
 };

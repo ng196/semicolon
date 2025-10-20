@@ -217,9 +217,9 @@ export default function ClubsPage() {
                         ) : (
                             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                                 {clubs.map((club) => (
-                                    <ProjectCard 
+                                    <ProjectCard
                                         key={club.id}
-                                        project={club} 
+                                        project={club}
                                         buttonLabel="View Club"
                                         onViewClick={() => navigate(`/clubs/${club.id}`)}
                                     />

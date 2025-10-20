@@ -11,7 +11,7 @@ import ClubSettings from "./ClubSettings";
 import JoinRequestsPanel from "./JoinRequestsPanel";
 
 interface Club {
-    id: number;
+    id: string | number;
     name: string;
     type: string;
     description: string;
@@ -53,26 +53,30 @@ export default function ClubPage() {
             setLoading(true);
             setError(null);
 
-            // Load club details
-            const clubData = await hubsApi.getById(id!);
-            setClub(clubData);
+            // Parallelize API calls for faster loading
+            const [clubData, settingsData] = await Promise.all([
+                hubsApi.getById(id!),
+                clubsApi.getSettings(id!).catch(() => null),
+            ]);
 
-            // Load club settings
-            try {
-                const settingsData = await clubsApi.getSettings(id!);
+            setClub(clubData);
+            if (settingsData) {
                 setSettings(settingsData);
-            } catch (err) {
-                console.log('No settings found, club might not be configured yet');
             }
 
-            // Check membership status
-            const members = await hubsApi.getMembers(id!);
-            const currentUser = JSON.parse(localStorage.getItem('user_data') || '{}');
-            const membership = members.find((m: any) => m.id === currentUser.id);
-
-            if (membership) {
-                setIsMember(true);
-                setUserRole(membership.role);
+            // Check membership status using efficient endpoint (single query, not all members)
+            const currentUser = JSON.parse(localStorage.getItem('user_data') || '{}') as { id?: number };
+            if (currentUser.id) {
+                try {
+                    const membership = await hubsApi.checkMembership(id!, currentUser.id) as { isMember: boolean; role?: string };
+                    if (membership.isMember) {
+                        setIsMember(true);
+                        setUserRole(membership.role || 'member');
+                    }
+                } catch (err) {
+                    // Silently fail if unable to check membership
+                    console.log('Could not check membership status');
+                }
             }
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to load club');
@@ -275,7 +279,7 @@ export default function ClubPage() {
 
                 {canManageClub && (
                     <TabsContent value="settings">
-                        <ClubSettings clubId={id!} settings={settings} onUpdate={loadClubData} />
+                        <ClubSettings clubId={id!} settings={settings} onUpdate={loadClubData} userRole={userRole || undefined} />
                     </TabsContent>
                 )}
             </Tabs>

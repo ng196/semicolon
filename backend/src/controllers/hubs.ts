@@ -96,3 +96,14 @@ export const removeMember = (req: Request, res: Response) => {
     res.status(400).json({ error: (error as Error).message });
   }
 };
+
+export const checkMembership = (req: Request, res: Response) => {
+  try {
+    const hubId = parseInt(req.params.id!);
+    const userId = parseInt(req.params.userId!);
+    const membership = model.checkHubMembership(hubId, userId);
+    res.json(membership || { isMember: false });
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
