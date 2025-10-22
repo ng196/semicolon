@@ -307,10 +307,10 @@ export const isClubMember = (club_id: number, user_id: number) => {
 
 export const canManageMembers = (club_id: number, user_id: number) => {
   const role = getUserClubRole(club_id, user_id);
-  return role === 'leader' || role === 'admin';
+  return role === 'leader' || role === 'admin' || role === 'creator';
 };
 
 export const canManagePosts = (club_id: number, user_id: number) => {
   const role = getUserClubRole(club_id, user_id);
-  return role === 'leader' || role === 'admin' || role === 'moderator';
+  return role === 'leader' || role === 'admin' || role === 'moderator' || role === 'creator';
 };

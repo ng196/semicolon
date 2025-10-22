@@ -139,7 +139,7 @@ export function CreateHubModal({ onHubCreated }: CreateHubModalProps) {
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Hub Name *</Label>
                             <Input
@@ -179,7 +179,7 @@ export function CreateHubModal({ onHubCreated }: CreateHubModalProps) {
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Icon</Label>
                             <Select value={formData.icon} onValueChange={(value) => setFormData(prev => ({ ...prev, icon: value }))}>
@@ -222,7 +222,7 @@ export function CreateHubModal({ onHubCreated }: CreateHubModalProps) {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="specialization">Specialization</Label>
                             <Input

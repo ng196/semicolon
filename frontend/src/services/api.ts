@@ -1,4 +1,6 @@
-const API_BASE_URL = 'http://localhost:3000';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// Use proxy path for API requests
+const API_BASE_URL = '/api';
 
 // Types
 interface HubData {
@@ -261,6 +263,24 @@ export const eventsApi = {
 
   delete: async (id: string | number) => {
     return apiClient.delete(`/events/${id}`);
+  },
+
+  getDashboard: async () => {
+    return apiClient.get('/events/dashboard');
+  },
+};
+
+export const rsvpApi = {
+  createOrUpdate: async (eventId: number, status: string) => {
+    return apiClient.post('/rsvps', { event_id: eventId, status });
+  },
+
+  getEventRSVPs: async (eventId: number) => {
+    return apiClient.get(`/rsvps/event/${eventId}`);
+  },
+
+  getUserRSVP: async (eventId: number) => {
+    return apiClient.get(`/rsvps/event/${eventId}/user`);
   },
 };
 

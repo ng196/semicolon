@@ -9,6 +9,8 @@ import { hubsApi, clubsApi } from "@/services/api";
 import ClubPosts from "./ClubPosts";
 import ClubSettings from "./ClubSettings";
 import JoinRequestsPanel from "./JoinRequestsPanel";
+import ClubEvents from "./ClubEvents";
+import ClubMembers from "./ClubMembers";
 
 interface Club {
     id: string | number;
@@ -260,20 +262,16 @@ export default function ClubPage() {
 
                 {isMember && (
                     <TabsContent value="events">
-                        <Card className="p-6">
-                            <h2 className="text-xl font-semibold mb-4">Events</h2>
-                            <p className="text-muted-foreground">Club events will be displayed here.</p>
-                        </Card>
+                        <ClubEvents clubId={id!} userRole={userRole} />
                     </TabsContent>
                 )}
 
                 {isMember && (
                     <TabsContent value="members">
-                        <Card className="p-6">
-                            <h2 className="text-xl font-semibold mb-4">Members</h2>
+                        <div className="space-y-6">
                             {canManageClub && <JoinRequestsPanel clubId={id!} />}
-                            <p className="text-muted-foreground mt-4">Member list will be displayed here.</p>
-                        </Card>
+                            <ClubMembers clubId={id!} userRole={userRole} />
+                        </div>
                     </TabsContent>
                 )}
 

@@ -171,7 +171,7 @@ export function CreateProjectModal({ onProjectCreated, buttonText, isClub = fals
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Project Icon</Label>
                             <Select value={formData.icon} onValueChange={(value) => setFormData(prev => ({ ...prev, icon: value }))}>
@@ -214,7 +214,7 @@ export function CreateProjectModal({ onProjectCreated, buttonText, isClub = fals
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="specialization">Target Specialization</Label>
                             <Input

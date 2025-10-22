@@ -202,7 +202,7 @@ export default function ProjectPage({ projectId }: ProjectPageProps) {
                         <Card className="p-6">
                             <h2 className="text-xl font-semibold mb-4">Project Details</h2>
 
-                            <div className="grid grid-cols-2 gap-6 mb-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                                 <div>
                                     <h3 className="font-medium text-sm text-muted-foreground mb-1">Specialization</h3>
                                     <p className="text-foreground">{project.specialization || 'All'}</p>

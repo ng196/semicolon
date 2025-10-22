@@ -3,6 +3,7 @@ import * as eventController from '../controllers/events.js';
 
 const router = Router();
 
+router.get('/dashboard', eventController.getDashboardEvents);
 router.post('/', eventController.createEvent);
 router.get('/', eventController.getAllEvents);
 router.get('/:id', eventController.getEvent);

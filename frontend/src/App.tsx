@@ -3,8 +3,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
 import Dashboard from "./pages/Dashboard";
 import Hubs from "./pages/Hubs";
 import Events from "./pages/Events";
@@ -22,6 +20,9 @@ const Login = lazy(() => import("./pages/auth/Login"));
 const Signup = lazy(() => import("./pages/auth/Signup"));
 const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
 import { OnboardingPage } from "./pages/auth/onboarding/OnboardingPage";
+import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
+import { OfflineIndicator } from "./components/OfflineIndicator";
+import { AppLayout } from "./components/AppLayout";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,8 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <PWAInstallPrompt />
+        <OfflineIndicator />
         <BrowserRouter>
           <Routes>
             {/* Auth routes - accessible only when NOT logged in */}
@@ -76,14 +79,9 @@ const App = () => (
               path="/"
               element={
                 <AuthGuard>
-                  <SidebarProvider>
-                    <div className="flex min-h-screen w-full">
-                      <AppSidebar />
-                      <div className="flex-1">
-                        <Dashboard />
-                      </div>
-                    </div>
-                  </SidebarProvider>
+                  <AppLayout>
+                    <Dashboard />
+                  </AppLayout>
                 </AuthGuard>
               }
             />
@@ -91,14 +89,9 @@ const App = () => (
               path="/hubs"
               element={
                 <AuthGuard>
-                  <SidebarProvider>
-                    <div className="flex min-h-screen w-full">
-                      <AppSidebar />
-                      <div className="flex-1">
-                        <Hubs />
-                      </div>
-                    </div>
-                  </SidebarProvider>
+                  <AppLayout>
+                    <Hubs />
+                  </AppLayout>
                 </AuthGuard>
               }
             />
@@ -106,14 +99,9 @@ const App = () => (
               path="/events"
               element={
                 <AuthGuard>
-                  <SidebarProvider>
-                    <div className="flex min-h-screen w-full">
-                      <AppSidebar />
-                      <div className="flex-1">
-                        <Events />
-                      </div>
-                    </div>
-                  </SidebarProvider>
+                  <AppLayout>
+                    <Events />
+                  </AppLayout>
                 </AuthGuard>
               }
             />
@@ -121,14 +109,9 @@ const App = () => (
               path="/marketplace"
               element={
                 <AuthGuard>
-                  <SidebarProvider>
-                    <div className="flex min-h-screen w-full">
-                      <AppSidebar />
-                      <div className="flex-1">
-                        <Marketplace />
-                      </div>
-                    </div>
-                  </SidebarProvider>
+                  <AppLayout>
+                    <Marketplace />
+                  </AppLayout>
                 </AuthGuard>
               }
             />
@@ -136,14 +119,9 @@ const App = () => (
               path="/network"
               element={
                 <AuthGuard>
-                  <SidebarProvider>
-                    <div className="flex min-h-screen w-full">
-                      <AppSidebar />
-                      <div className="flex-1">
-                        <Network />
-                      </div>
-                    </div>
-                  </SidebarProvider>
+                  <AppLayout>
+                    <Network />
+                  </AppLayout>
                 </AuthGuard>
               }
             />
@@ -151,14 +129,9 @@ const App = () => (
               path="/requests"
               element={
                 <AuthGuard>
-                  <SidebarProvider>
-                    <div className="flex min-h-screen w-full">
-                      <AppSidebar />
-                      <div className="flex-1">
-                        <Requests />
-                      </div>
-                    </div>
-                  </SidebarProvider>
+                  <AppLayout>
+                    <Requests />
+                  </AppLayout>
                 </AuthGuard>
               }
             />
@@ -166,14 +139,9 @@ const App = () => (
               path="/clubs"
               element={
                 <AuthGuard>
-                  <SidebarProvider>
-                    <div className="flex min-h-screen w-full">
-                      <AppSidebar />
-                      <div className="flex-1">
-                        <ClubsPage />
-                      </div>
-                    </div>
-                  </SidebarProvider>
+                  <AppLayout>
+                    <ClubsPage />
+                  </AppLayout>
                 </AuthGuard>
               }
             />
@@ -181,14 +149,9 @@ const App = () => (
               path="/clubs/:id"
               element={
                 <AuthGuard>
-                  <SidebarProvider>
-                    <div className="flex min-h-screen w-full">
-                      <AppSidebar />
-                      <div className="flex-1">
-                        <ClubPage />
-                      </div>
-                    </div>
-                  </SidebarProvider>
+                  <AppLayout>
+                    <ClubPage />
+                  </AppLayout>
                 </AuthGuard>
               }
             />

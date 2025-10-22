@@ -6,8 +6,23 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: "0.0.0.0", // Allow external connections
     port: 8080,
+    allowedHosts: [
+      "localhost",
+      ".ngrok.io",
+      ".ngrok-free.app",
+      ".ngrok.app",
+      "4a4d6b5803f2.ngrok-free.app" // Your specific ngrok URL
+    ],
+    proxy: {
+      // Proxy API requests to backend
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {

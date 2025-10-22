@@ -155,3 +155,16 @@ CREATE TABLE IF NOT EXISTS club_events (
   FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
   FOREIGN KEY (club_id) REFERENCES hubs(id) ON DELETE CASCADE
 );
+
+-- Event RSVPs
+CREATE TABLE IF NOT EXISTS event_rsvps (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  event_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('going', 'interested', 'not_going')),
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE(event_id, user_id)
+);

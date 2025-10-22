@@ -154,7 +154,7 @@ export const Step4Interests: React.FC<Step4Props> = ({
                     {Object.entries(interestCategories).map(([category, interests]) => (
                         <div key={category} className="space-y-2">
                             <h4 className="font-medium text-sm text-gray-700">{category}</h4>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 {interests.map((interest) => (
                                     <div key={interest} className="flex items-center space-x-2">
                                         <Checkbox

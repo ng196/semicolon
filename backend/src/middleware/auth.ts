@@ -18,6 +18,7 @@ interface TokenMetadata {
 
 interface TokenPayload {
     userId: number;
+    id: number; // For compatibility with controllers
     email: string;
     jti: string; // JWT ID for whitelist tracking
     iat: number;
@@ -42,13 +43,14 @@ export function generateToken(userId: number, email: string, rememberMe: boolean
 
     // Different expiry based on remember me
     const expiresIn = rememberMe
-        ? 30 * 24 * 60 * 60  // 30 days if remember me
-        : 24 * 60 * 60;      // 24 hours if normal login
+        ? 1 * 24 * 60 * 60  // 1 day if remember me
+        : 1 * 24 * 60 * 60;      // 1 day if normal login
 
-    const expiry = rememberMe ? '30d' : '24h';
+    const expiry = rememberMe ? '1d' : '1d';
 
     const payload: Omit<TokenPayload, 'iat' | 'exp'> = {
         userId,
+        id: userId, // For compatibility with controllers
         email,
         jti,
     };
@@ -65,6 +67,9 @@ export function generateToken(userId: number, email: string, rememberMe: boolean
         expiresAt: now + expiresIn,
     });
 
+    console.log('🟢 Token generated for user:', userId, 'jti:', jti);
+    console.log('🟢 Token added to whitelist, size now:', tokenWhitelist.size);
+
     return token;
 }
 
@@ -73,23 +78,35 @@ export function generateToken(userId: number, email: string, rememberMe: boolean
  */
 export function verifyToken(token: string): TokenPayload | null {
     try {
+        console.log('🔵 Verifying token...');
+
         // Verify JWT signature and expiration
         const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
+        console.log('🔵 JWT signature valid, jti:', decoded.jti);
 
         // Check if token exists in whitelist
         const metadata = tokenWhitelist.get(decoded.jti);
+        console.log('🔵 Token in whitelist:', !!metadata);
+        console.log('🔵 Whitelist size:', tokenWhitelist.size);
+
         if (!metadata) {
+            console.log('🔴 Token not in whitelist - may have been cleared on server restart');
             return null; // Token not in whitelist (logged out or invalid)
         }
 
         // Check if token is expired (double-check)
-        if (metadata.expiresAt < Math.floor(Date.now() / 1000)) {
+        const now = Math.floor(Date.now() / 1000);
+        console.log('🔵 Token expiry check - now:', now, 'expires:', metadata.expiresAt);
+        if (metadata.expiresAt < now) {
+            console.log('🔴 Token expired');
             tokenWhitelist.delete(decoded.jti); // Clean up expired token
             return null;
         }
 
+        console.log('🟢 Token verification successful');
         return decoded;
     } catch (error) {
+        console.log('🔴 Token verification failed:', error instanceof Error ? error.message : error);
         // Invalid signature or malformed token
         return null;
     }
@@ -156,27 +173,41 @@ export function getWhitelistStats() {
  */
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
+        console.log('🔵 Auth middleware - URL:', req.method, req.path);
+
         // Extract token from Authorization header
         const authHeader = req.headers.authorization;
+        console.log('🔵 Auth header exists:', !!authHeader);
+        console.log('🔵 Auth header preview:', authHeader ? authHeader.substring(0, 20) + '...' : 'null');
+
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            console.log('🔴 No valid auth header found');
             // Test bypass for development
-            if (req.headers['x-test-auth'] === 'test-token') { req.user = { userId: 1, email: 'test@test.com', jti: 'test', iat: 0, exp: 0 }; return next(); }
+            if (req.headers['x-test-auth'] === 'test-token') {
+                req.user = { userId: 1, id: 1, email: 'test@test.com', jti: 'test', iat: 0, exp: 0 };
+                console.log('🟢 Test bypass activated for user 1');
+                return next();
+            }
             return res.status(401).json({ error: 'No token provided' });
         }
 
         const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+        console.log('🔵 Extracted token preview:', token.substring(0, 20) + '...');
 
         // Verify token
         const decoded = verifyToken(token);
+        console.log('🔵 Token verification result:', !!decoded);
         if (!decoded) {
+            console.log('🔴 Token verification failed');
             return res.status(401).json({ error: 'Invalid or expired token' });
         }
 
+        console.log('🟢 Auth successful for user:', decoded.userId);
         // Attach user to request
         req.user = decoded;
         next();
     } catch (error) {
-        console.error('Auth middleware error:', error);
+        console.error('🔴 Auth middleware error:', error);
         return res.status(401).json({ error: 'Authentication failed' });
     }
 }

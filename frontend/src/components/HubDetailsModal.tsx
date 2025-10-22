@@ -207,7 +207,7 @@ export function HubDetailsModal({ hub, open, onOpenChange, onHubUpdated }: HubDe
 
                 <div className="space-y-6">
                     {/* Hub Stats */}
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div className="text-center p-4 bg-muted rounded-lg">
                             <div className="text-2xl font-bold text-foreground">{hub.members}</div>
                             <div className="text-sm text-muted-foreground">Members</div>
@@ -232,7 +232,7 @@ export function HubDetailsModal({ hub, open, onOpenChange, onHubUpdated }: HubDe
                     </div>
 
                     {/* Details */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <h4 className="font-medium mb-1">Specialization</h4>
                             <p className="text-sm text-muted-foreground">{hub.specialization || 'All'}</p>
