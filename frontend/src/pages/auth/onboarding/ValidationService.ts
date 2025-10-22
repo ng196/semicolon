@@ -6,7 +6,7 @@ export interface ValidationResult {
 }
 
 class ValidationService {
-    private readonly API_BASE = 'http://localhost:3000';
+    private readonly API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
     private debounceTimers: Map<string, NodeJS.Timeout> = new Map();
 
     // Debounced email validation

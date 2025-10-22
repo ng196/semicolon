@@ -104,7 +104,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setError(null);
 
             // Call real backend API
-            const response = await fetch('http://localhost:3000/auth/login', {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(credentials),
@@ -146,7 +146,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             console.log('Attempting signup with:', signupData);
 
-            const response = await fetch('http://localhost:3000/auth/signup', {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/auth/signup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(signupData),
@@ -183,7 +183,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
                 console.log('Updating profile in background:', profileData);
 
-                fetch('http://localhost:3000/auth/profile', {
+                fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/auth/profile`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

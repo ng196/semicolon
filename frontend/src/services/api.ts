@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// Use proxy path for API requests
-const API_BASE_URL = '/api';
+// Use environment variable for API base URL, fallback to proxy path for development
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // Types
 interface HubData {

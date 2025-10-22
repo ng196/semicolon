@@ -3,12 +3,12 @@ code
 .playwright-mcp
 
 .env
+.env.local
 backend/node_modules/
 frontend/node_modules/
 files
 
 .eslintignore
 .kiro
-.env
 
 

@@ -22,7 +22,8 @@ app.use(cors({
     /^https:\/\/.*\.ngrok\.io$/,           // ngrok URLs
     /^https:\/\/.*\.ngrok-free\.app$/,     // ngrok free URLs
     /^https:\/\/.*\.ngrok\.app$/,          // ngrok app URLs
-    'https://4a4d6b5803f2.ngrok-free.app' // Your specific ngrok URL
+    'https://4a4d6b5803f2.ngrok-free.app', // Your specific ngrok URL
+    'https://campushub-wr4r.onrender.com'  // Your deployed frontend
   ],
   credentials: true
 }));
@@ -41,9 +42,14 @@ app.use('/requests', authMiddleware, requestRoutes);
 app.use('/clubs', authMiddleware, clubRoutes);
 app.use('/rsvps', authMiddleware, rsvpRoutes);
 
-// app.get('/', (req, res) => {
-//   res.send('Hello World!');
-// });
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.json({
+    status: 'ok',
+    message: 'CampusHub API is running',
+    timestamp: new Date().toISOString()
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
