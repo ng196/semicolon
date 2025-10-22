@@ -13,7 +13,8 @@ export default defineConfig(({ mode }) => ({
       ".ngrok.io",
       ".ngrok-free.app",
       ".ngrok.app",
-      "4a4d6b5803f2.ngrok-free.app" // Your specific ngrok URL
+      "4a4d6b5803f2.ngrok-free.app", // Your specific ngrok URL
+      ".onrender.com" // Allow all Render domains
     ],
     proxy: {
       // Proxy API requests to backend
@@ -23,6 +24,17 @@ export default defineConfig(({ mode }) => ({
         rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
+  },
+  preview: {
+    host: "0.0.0.0", // Allow external connections in preview mode
+    port: 3000,
+    allowedHosts: [
+      "localhost",
+      ".ngrok.io",
+      ".ngrok-free.app",
+      ".ngrok.app",
+      ".onrender.com" // Allow all Render domains
+    ]
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {

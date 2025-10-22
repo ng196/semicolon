@@ -13,8 +13,9 @@ import { authMiddleware } from './src/middleware/auth.js';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: [
+// CORS configuration from environment variables
+const getAllowedOrigins = () => {
+  const defaultOrigins = [
     'http://localhost:8080',
     'http://127.0.0.1:8080',
     /^http:\/\/192\.168\.\d+\.\d+:8080$/, // Local network IPs
@@ -22,9 +23,16 @@ app.use(cors({
     /^https:\/\/.*\.ngrok\.io$/,           // ngrok URLs
     /^https:\/\/.*\.ngrok-free\.app$/,     // ngrok free URLs
     /^https:\/\/.*\.ngrok\.app$/,          // ngrok app URLs
-    'https://4a4d6b5803f2.ngrok-free.app', // Your specific ngrok URL
-    'https://campushub-wr4r.onrender.com'  // Your deployed frontend
-  ],
+  ];
+
+  // Add origins from environment variable
+  const envOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : [];
+
+  return [...defaultOrigins, ...envOrigins];
+};
+
+app.use(cors({
+  origin: getAllowedOrigins(),
   credentials: true
 }));
 app.use(express.urlencoded({ extended: true }));
