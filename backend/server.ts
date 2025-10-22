@@ -26,13 +26,46 @@ const getAllowedOrigins = () => {
   ];
 
   // Add origins from environment variable
-  const envOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : [];
+  const envOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim()) : [];
+
+  // Debug logging
+  console.log('🔍 CORS Debug Info:');
+  console.log('📝 Raw CORS_ORIGINS env var:', process.env.CORS_ORIGINS);
+  console.log('📋 Parsed env origins:', envOrigins);
+  console.log('🌐 All allowed origins:', [...defaultOrigins, ...envOrigins]);
 
   return [...defaultOrigins, ...envOrigins];
 };
 
 app.use(cors({
-  origin: getAllowedOrigins(),
+  origin: (origin, callback) => {
+    const allowedOrigins = getAllowedOrigins();
+    console.log('🔍 CORS Request Debug:');
+    console.log('📍 Request origin:', origin);
+    console.log('✅ Allowed origins:', allowedOrigins);
+
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+
+    // Check if origin is allowed
+    const isAllowed = allowedOrigins.some(allowedOrigin => {
+      if (typeof allowedOrigin === 'string') {
+        return allowedOrigin === origin;
+      } else if (allowedOrigin instanceof RegExp) {
+        return allowedOrigin.test(origin);
+      }
+      return false;
+    });
+
+    console.log('🎯 Origin allowed:', isAllowed);
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.log('❌ CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.urlencoded({ extended: true }));
@@ -56,6 +89,16 @@ app.get('/', (req, res) => {
     status: 'ok',
     message: 'CampusHub API is running',
     timestamp: new Date().toISOString()
+  });
+});
+
+// Debug endpoint to check CORS origins
+app.get('/debug/cors', (req, res) => {
+  const allowedOrigins = getAllowedOrigins();
+  res.json({
+    corsOrigins: process.env.CORS_ORIGINS,
+    allowedOrigins: allowedOrigins,
+    requestOrigin: req.headers.origin
   });
 });
 
