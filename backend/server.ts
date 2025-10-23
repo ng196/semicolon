@@ -103,8 +103,8 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
   // Handle client-side routing - serve index.html for non-API routes
-  app.get('/*', (req, res) => {
-    // Don't serve index.html for API routes
+  app.get('*', (req, res) => {
+    // Skip serving index.html for API routes
     if (req.path.startsWith('/api') ||
       req.path.startsWith('/auth') ||
       req.path.startsWith('/users') ||
@@ -118,6 +118,7 @@ if (process.env.NODE_ENV === 'production') {
       return res.status(404).json({ error: 'API endpoint not found' });
     }
 
+    // For all other routes (frontend routes), serve the React app
     res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
   });
 } else {
