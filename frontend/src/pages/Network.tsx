@@ -1,12 +1,4 @@
-import { useState, useEffect } from "react";
-import { Search, Filter, UserPlus, MessageCircle, Users as UsersIcon, Loader2, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
-import { usersApi } from "@/services/api";
+import { ComingSoon } from "@/components/ComingSoon";
 
 interface User {
   id: number;
@@ -22,6 +14,16 @@ interface User {
 }
 
 export default function Network() {
+  return (
+    <ComingSoon
+      title="Network"
+      description="Connect with classmates and build your campus network. This feature is coming soon!"
+    />
+  );
+}
+
+/* Original Network - temporarily disabled
+function NetworkOriginal() {
   const [activeTab, setActiveTab] = useState("my-classes");
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -256,3 +258,4 @@ export default function Network() {
     </div>
   );
 }
+*/

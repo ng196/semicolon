@@ -1,14 +1,4 @@
-import { useState, useEffect } from "react";
-import { Plus, Search, Filter, Users, Clock, Eye, Share2, ThumbsUp, CheckCircle2, MessageSquare, Loader2, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
-import { StatusBadge } from "@/components/StatusBadge";
-import { CategoryBadge } from "@/components/CategoryBadge";
-import { requestsApi } from "@/services/api";
+import { ComingSoon } from "@/components/ComingSoon";
 
 interface Request {
   id: number;
@@ -30,6 +20,16 @@ interface Request {
 }
 
 export default function Requests() {
+  return (
+    <ComingSoon
+      title="Requests"
+      description="Submit and track campus improvement requests. This feature is coming soon!"
+    />
+  );
+}
+
+/* Original Requests - temporarily disabled
+function RequestsOriginal() {
   const [activeTab, setActiveTab] = useState("all");
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
@@ -313,4 +313,5 @@ export default function Requests() {
     </div>
   );
 }
+*/
 

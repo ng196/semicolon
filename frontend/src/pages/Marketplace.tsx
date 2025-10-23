@@ -1,11 +1,4 @@
-import { useState, useEffect } from "react";
-import { Plus, Search, Filter, Heart, MessageCircle, Star, Loader2, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CategoryBadge } from "@/components/CategoryBadge";
-import { marketplaceApi } from "@/services/api";
+import { ComingSoon } from "@/components/ComingSoon";
 
 interface MarketplaceItem {
   id: string | number;
@@ -25,6 +18,16 @@ interface MarketplaceItem {
 }
 
 export default function Marketplace() {
+  return (
+    <ComingSoon
+      title="Marketplace"
+      description="Buy and sell items with your campus community. This feature is coming soon!"
+    />
+  );
+}
+
+/* Original Marketplace - temporarily disabled
+function MarketplaceOriginal() {
   const [items, setItems] = useState<MarketplaceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -260,3 +263,4 @@ export default function Marketplace() {
     </div>
   );
 }
+*/

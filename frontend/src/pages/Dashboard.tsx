@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { useDashboardEvents } from "./events";
-import hubsData from "@/data/hubs.json";
+import { useAuth } from "@/pages/auth/contexts/AuthContext";
 import marketplaceData from "@/data/marketplace.json";
 
 const quickActions = [
@@ -16,33 +16,9 @@ const quickActions = [
   { title: "Find Friends", icon: UserPlus, color: "bg-teal-500", href: "/network" },
 ];
 
-const recentActivity = [
-  {
-    user: "Alex Chen",
-    action: "posted an update in",
-    target: "Web Dev Project",
-    time: "2 hours ago",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
-  },
-  {
-    user: "Emma Wilson",
-    action: "joined",
-    target: "Photography Club",
-    time: "4 hours ago",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emma",
-  },
-  {
-    user: "Mike Rodriguez",
-    action: "listed a new item in",
-    target: "Marketplace",
-    time: "6 hours ago",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mike",
-  },
-];
-
 export default function Dashboard() {
+  const { user } = useAuth();
   const { events: upcomingEvents, loading: eventsLoading } = useDashboardEvents();
-  const suggestedHubs = hubsData.slice(0, 2);
   const recentMarketplace = marketplaceData.slice(0, 2);
 
   const handleQuickAction = (href: string) => {
@@ -55,7 +31,7 @@ export default function Dashboard() {
         <div className="flex h-16 items-center justify-between px-4 sm:px-6">
           <div className="min-w-0 flex-1">
             <h1 className="text-xl sm:text-2xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Welcome back, Sarah! Here's what's happening today.</p>
+            <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Welcome back, {user?.name || 'User'}! Here's what's happening today.</p>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
             <Input
@@ -140,30 +116,15 @@ export default function Dashboard() {
                 </div>
               </section>
 
-              {/* Recent Activity */}
+              {/* Recent Activity - Coming Soon */}
               <section>
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-lg font-semibold text-foreground">Recent Activity</h2>
-                  <Button variant="ghost" size="sm">...</Button>
                 </div>
-                <Card className="divide-y">
-                  {recentActivity.map((activity, index) => (
-                    <div key={index} className="flex items-start gap-3 p-4">
-                      <img
-                        src={activity.avatar}
-                        alt={activity.user}
-                        className="h-10 w-10 rounded-full"
-                      />
-                      <div className="flex-1">
-                        <p className="text-sm">
-                          <span className="font-medium">{activity.user}</span>{" "}
-                          <span className="text-muted-foreground">{activity.action}</span>{" "}
-                          <span className="font-medium text-primary">{activity.target}</span>
-                        </p>
-                        <p className="text-xs text-muted-foreground">{activity.time}</p>
-                      </div>
-                    </div>
-                  ))}
+                <Card className="p-8 text-center">
+                  <TrendingUp className="mx-auto h-12 w-12 text-muted-foreground mb-3" />
+                  <h3 className="font-semibold mb-2">Coming Soon</h3>
+                  <p className="text-sm text-muted-foreground">Activity feed will be available soon</p>
                 </Card>
               </section>
 
@@ -205,25 +166,14 @@ export default function Dashboard() {
 
             {/* Right Column */}
             <div className="space-y-6">
-              {/* Suggested for You */}
+              {/* Suggested for You - Coming Soon */}
               <section>
                 <h2 className="mb-4 text-lg font-semibold text-foreground">Suggested for You</h2>
-                <div className="space-y-3">
-                  {suggestedHubs.map((hub) => (
-                    <Card key={hub.id} className="p-4">
-                      <div className="mb-2 flex items-start justify-between">
-                        <div className={`flex h-10 w-10 items-center justify-center rounded-lg bg-${hub.color}-100`}>
-                          <GraduationCap className="h-5 w-5 text-primary" />
-                        </div>
-                        <Button size="sm">Join</Button>
-                      </div>
-                      <h3 className="font-semibold text-foreground">{hub.name}</h3>
-                      <p className="text-xs text-muted-foreground">
-                        {hub.members} members
-                      </p>
-                    </Card>
-                  ))}
-                </div>
+                <Card className="p-8 text-center">
+                  <Heart className="mx-auto h-12 w-12 text-muted-foreground mb-3" />
+                  <h3 className="font-semibold mb-2">Coming Soon</h3>
+                  <p className="text-sm text-muted-foreground">Personalized recommendations will be available soon</p>
+                </Card>
               </section>
 
               {/* Your Network */}
@@ -285,7 +235,12 @@ export default function Dashboard() {
                   <h2 className="text-lg font-semibold text-foreground">Marketplace</h2>
                   <Button variant="link" size="sm">Browse All</Button>
                 </div>
-                <div className="space-y-3">
+                <Card className="p-8 text-center">
+                  <ShoppingBag className="mx-auto h-12 w-12 text-muted-foreground mb-3" />
+                  <h3 className="font-semibold mb-2">Coming Soon</h3>
+                  <p className="text-sm text-muted-foreground">Marketplace items will be available soon</p>
+                </Card>
+                <div className="space-y-3 hidden">
                   {recentMarketplace.map((item) => (
                     <Card key={item.id} className="overflow-hidden">
                       <img
@@ -298,6 +253,7 @@ export default function Dashboard() {
                         <p className="text-lg font-bold text-primary">
                           {item.price === 0 ? "Free to borrow" : `$${item.price}`}
                         </p>
+                        {/* Marketplace temporarily disabled - showing coming soon instead */}
                       </div>
                     </Card>
                   ))}

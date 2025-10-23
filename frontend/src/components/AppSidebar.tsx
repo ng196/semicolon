@@ -11,7 +11,7 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import currentUserData from "@/data/users.json";
+import { useAuth } from "@/pages/auth/contexts/AuthContext";
 
 const navItems = [
   { title: "Dashboard", url: "/", icon: Home },
@@ -23,7 +23,10 @@ const navItems = [
 ];
 
 export function AppSidebar() {
-  const currentUser = currentUserData[0];
+  const { user } = useAuth();
+
+  // Fallback avatar if user doesn't have one
+  const userAvatar = user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'User'}`;
 
   return (
     <Sidebar className="border-r border-border">
@@ -50,10 +53,9 @@ export function AppSidebar() {
                       to={item.url}
                       end={item.url === "/"}
                       className={({ isActive }) =>
-                        `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                          isActive
-                            ? "bg-sidebar-accent text-primary-foreground"
-                            : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                        `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${isActive
+                          ? "bg-sidebar-accent text-primary-foreground"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent/50"
                         }`
                       }
                     >
@@ -71,13 +73,13 @@ export function AppSidebar() {
       <SidebarFooter className="border-t border-border bg-sidebar-background p-4">
         <div className="flex items-center gap-3">
           <img
-            src={currentUser.avatar}
-            alt={currentUser.name}
+            src={userAvatar}
+            alt={user?.name || 'User'}
             className="h-10 w-10 rounded-full"
           />
           <div className="flex-1 overflow-hidden">
-            <p className="truncate text-sm font-medium text-sidebar-foreground">{currentUser.name}</p>
-            <p className="truncate text-xs text-sidebar-muted">{currentUser.specialization}</p>
+            <p className="truncate text-sm font-medium text-sidebar-foreground">{user?.name || 'User'}</p>
+            <p className="truncate text-xs text-sidebar-muted">{user?.specialization || user?.email}</p>
           </div>
           <button className="text-sidebar-muted hover:text-sidebar-foreground">
             <Settings className="h-5 w-5" />

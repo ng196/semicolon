@@ -162,14 +162,7 @@ export default function LoginForm() {
                     </p>
                 </div>
 
-                {/* Demo credentials for testing */}
-                <div className="mt-4 p-3 bg-muted rounded-md">
-                    <p className="text-xs text-muted-foreground text-center mb-2">Demo credentials:</p>
-                    <p className="text-xs text-center">
-                        <strong>Email:</strong> test@campus.edu<br />
-                        <strong>Password:</strong> password123
-                    </p>
-                </div>
+
             </Card>
         </div>
     );
