@@ -98,39 +98,24 @@ app.get('/debug/cors', (req, res) => {
   });
 });
 
-// Serve static files from frontend dist (for production)
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
-
-  // Handle client-side routing - serve index.html for non-API routes
-  app.get('*', (req, res) => {
-    // Skip serving index.html for API routes
-    if (req.path.startsWith('/api') ||
-      req.path.startsWith('/auth') ||
-      req.path.startsWith('/users') ||
-      req.path.startsWith('/hubs') ||
-      req.path.startsWith('/events') ||
-      req.path.startsWith('/marketplace') ||
-      req.path.startsWith('/requests') ||
-      req.path.startsWith('/clubs') ||
-      req.path.startsWith('/rsvps') ||
-      req.path.startsWith('/debug')) {
-      return res.status(404).json({ error: 'API endpoint not found' });
-    }
-
-    // For all other routes (frontend routes), serve the React app
-    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.json({
+    status: 'ok',
+    message: 'CampusHub API is running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
   });
-} else {
-  // Health check endpoint for development
-  app.get('/', (req, res) => {
-    res.json({
-      status: 'ok',
-      message: 'CampusHub API is running',
-      timestamp: new Date().toISOString()
-    });
+});
+
+// 404 handler for unmatched routes
+app.use((req, res) => {
+  res.status(404).json({
+    error: 'Route not found',
+    path: req.originalUrl,
+    method: req.method
   });
-}
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
