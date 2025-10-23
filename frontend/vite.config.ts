@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -36,7 +37,63 @@ export default defineConfig(({ mode }) => ({
       ".onrender.com" // Allow all Render domains
     ]
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [
+    react(),
+    mode === "development" && componentTagger(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}']
+      },
+      includeAssets: ['placeholder.svg'],
+      manifest: {
+        name: 'CampusHub - Student Portal',
+        short_name: 'CampusHub',
+        description: 'Connect with classmates, discover events, join clubs, and engage with your campus community',
+        theme_color: '#6366f1',
+        background_color: '#ffffff',
+        display: 'standalone',
+        orientation: 'portrait-primary',
+        start_url: '/',
+        scope: '/',
+        icons: [
+          {
+            src: 'placeholder.svg',
+            sizes: '192x192',
+            type: 'image/svg+xml',
+            purpose: 'any'
+          },
+          {
+            src: 'placeholder.svg',
+            sizes: '512x512',
+            type: 'image/svg+xml',
+            purpose: 'any'
+          }
+        ],
+        categories: ['education', 'social', 'productivity'],
+        shortcuts: [
+          {
+            name: 'Dashboard',
+            short_name: 'Home',
+            description: 'Open CampusHub Dashboard',
+            url: '/'
+          },
+          {
+            name: 'Events',
+            short_name: 'Events',
+            description: 'Browse campus events',
+            url: '/events'
+          },
+          {
+            name: 'Hubs',
+            short_name: 'Hubs',
+            description: 'Explore student hubs',
+            url: '/hubs'
+          }
+        ]
+      }
+    })
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

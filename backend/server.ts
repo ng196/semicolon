@@ -1,5 +1,10 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import authRoutes from './src/routes/auth.js';
 import userRoutes from './src/routes/users.js';
 import hubRoutes from './src/routes/hubs.js';
@@ -83,14 +88,38 @@ app.use('/requests', authMiddleware, requestRoutes);
 app.use('/clubs', authMiddleware, clubRoutes);
 app.use('/rsvps', authMiddleware, rsvpRoutes);
 
-// Health check endpoint
-app.get('/', (req, res) => {
-  res.json({
-    status: 'ok',
-    message: 'CampusHub API is running',
-    timestamp: new Date().toISOString()
+// Serve static files from frontend dist (for production)
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+  // Handle client-side routing - serve index.html for non-API routes
+  app.get('*', (req, res) => {
+    // Don't serve index.html for API routes
+    if (req.path.startsWith('/api') ||
+      req.path.startsWith('/auth') ||
+      req.path.startsWith('/users') ||
+      req.path.startsWith('/hubs') ||
+      req.path.startsWith('/events') ||
+      req.path.startsWith('/marketplace') ||
+      req.path.startsWith('/requests') ||
+      req.path.startsWith('/clubs') ||
+      req.path.startsWith('/rsvps') ||
+      req.path.startsWith('/debug')) {
+      return res.status(404).json({ error: 'API endpoint not found' });
+    }
+
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
   });
-});
+} else {
+  // Health check endpoint for development
+  app.get('/', (req, res) => {
+    res.json({
+      status: 'ok',
+      message: 'CampusHub API is running',
+      timestamp: new Date().toISOString()
+    });
+  });
+}
 
 // Debug endpoint to check CORS origins
 app.get('/debug/cors', (req, res) => {
