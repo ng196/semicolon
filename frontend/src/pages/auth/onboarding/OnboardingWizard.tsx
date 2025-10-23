@@ -59,6 +59,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
     const prevStep = () => {
         if (currentStep > 1) {
             setCurrentStep(prev => prev - 1);
+        } else if (currentStep === 1) {
+            // On first step, redirect to login page
+            window.location.href = '/auth/login';
         }
     };
 
@@ -169,7 +172,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
                         <Button
                             variant="outline"
                             onClick={prevStep}
-                            disabled={currentStep === 1}
                             className="flex items-center gap-2"
                         >
                             <ChevronLeft className="h-4 w-4" />
