@@ -88,12 +88,22 @@ app.use('/requests', authMiddleware, requestRoutes);
 app.use('/clubs', authMiddleware, clubRoutes);
 app.use('/rsvps', authMiddleware, rsvpRoutes);
 
+// Debug endpoint to check CORS origins (must be before wildcard route)
+app.get('/debug/cors', (req, res) => {
+  const allowedOrigins = getAllowedOrigins();
+  res.json({
+    corsOrigins: process.env.CORS_ORIGINS,
+    allowedOrigins: allowedOrigins,
+    requestOrigin: req.headers.origin
+  });
+});
+
 // Serve static files from frontend dist (for production)
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
   // Handle client-side routing - serve index.html for non-API routes
-  app.get('*', (req, res) => {
+  app.get('/*', (req, res) => {
     // Don't serve index.html for API routes
     if (req.path.startsWith('/api') ||
       req.path.startsWith('/auth') ||
@@ -120,16 +130,6 @@ if (process.env.NODE_ENV === 'production') {
     });
   });
 }
-
-// Debug endpoint to check CORS origins
-app.get('/debug/cors', (req, res) => {
-  const allowedOrigins = getAllowedOrigins();
-  res.json({
-    corsOrigins: process.env.CORS_ORIGINS,
-    allowedOrigins: allowedOrigins,
-    requestOrigin: req.headers.origin
-  });
-});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
