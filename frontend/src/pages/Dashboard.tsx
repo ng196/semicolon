@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { CategoryBadge } from "@/components/CategoryBadge";
-import { useDashboardEvents } from "./events";
+import { useDashboardEvents } from "./events/hooks";
 import { useAuth } from "@/pages/auth/contexts/AuthContext";
 import marketplaceData from "@/data/marketplace.json";
 
