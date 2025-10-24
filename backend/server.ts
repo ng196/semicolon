@@ -118,5 +118,11 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log('\n' + '='.repeat(80));
+  console.log('🚀 CampusHub API Server Started');
+  console.log('='.repeat(80));
+  console.log(`📍 Port: ${PORT}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`⏰ Started at: ${new Date().toISOString()}`);
+  console.log('='.repeat(80) + '\n');
 });
