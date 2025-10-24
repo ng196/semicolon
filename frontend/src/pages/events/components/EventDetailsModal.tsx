@@ -5,6 +5,7 @@ import { Check, X, Star, Share2, Mail, MapPin, Calendar, Clock, Users } from 'lu
 import { Badge } from '@/components/ui/badge';
 import EventClubBadge from './EventClubBadge';
 import EventActions from './EventActions';
+import EditEventModal from './EditEventModal';
 import { eventsApi } from '@/services/api';
 import { useEventRSVP } from '../hooks/useEventRSVP';
 import { useToast } from '@/hooks/use-toast';
@@ -14,6 +15,7 @@ export default function EventDetailsModal({ event, open, onClose, onUpdate }: an
         const { userStatus, attendees, loading, updateRSVP } = useEventRSVP(event?.id);
         const { toast } = useToast();
         const [showAttendees, setShowAttendees] = useState(false);
+        const [showEditModal, setShowEditModal] = useState(false);
 
         const handleRSVP = async (status: string) => {
             try {
@@ -48,12 +50,25 @@ export default function EventDetailsModal({ event, open, onClose, onUpdate }: an
         };
 
         const handleContact = () => {
-            toast({ title: 'Contact organizer', description: `Reach out to ${event.club_name || event.organizer}` });
+            toast({ title: 'Feature coming soon!', description: 'Contact organizer feature will be available soon' });
+        };
+
+        const handleEdit = () => {
+            setShowEditModal(true);
+        };
+
+        const handleEditSuccess = () => {
+            onUpdate(); // Refresh the events list
+            toast({
+                title: 'Event Updated',
+                description: 'Event has been updated successfully'
+            });
         };
 
         if (!event) return null;
 
         return (
+            <>
             <Dialog open={open} onOpenChange={onClose}>
                 <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
@@ -155,10 +170,19 @@ export default function EventDetailsModal({ event, open, onClose, onUpdate }: an
                         </div>
 
                         {/* Admin Actions */}
-                        <EventActions event={event} onEdit={() => console.log('Edit')} onDelete={handleDelete} />
+                        <EventActions event={event} onEdit={handleEdit} onDelete={handleDelete} />
                     </div>
                 </DialogContent>
             </Dialog>
+
+            {/* Edit Event Modal */}
+            <EditEventModal
+                event={event}
+                open={showEditModal}
+                onClose={() => setShowEditModal(false)}
+                onSuccess={handleEditSuccess}
+            />
+            </>
         );
     } catch (error) {
         console.error('EventDetailsModal render error:', error);
