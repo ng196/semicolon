@@ -11,13 +11,13 @@ files
 .eslintignore
 .kiro
 
-# Database files (temporarily commented out for one-time push)
-# backend/database/*.db
-# backend/database/*.db-shm
-# backend/database/*.db-wal
-# *.db
-# *.db-shm
-# *.db-wal
+# Database files
+backend/database/*.db
+backend/database/*.db-shm
+backend/database/*.db-wal
+*.db
+*.db-shm
+*.db-wal
 
 # Logs
 backend/apilogs.txt
