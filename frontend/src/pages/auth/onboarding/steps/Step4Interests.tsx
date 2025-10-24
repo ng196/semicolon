@@ -189,7 +189,7 @@ export const Step4Interests: React.FC<Step4Props> = ({
                     onClick={handleSkip}
                     className="text-gray-500 hover:text-gray-700"
                 >
-                    Skip - I'll personalize later
+                    Continue
                 </Button>
             </div>
 

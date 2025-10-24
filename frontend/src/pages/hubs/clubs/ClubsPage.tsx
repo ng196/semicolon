@@ -146,9 +146,9 @@ export default function ClubsPage() {
                             />
                         </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         <Select value={specializationFilter} onValueChange={setSpecializationFilter}>
-                            <SelectTrigger className="w-[180px]">
+                            <SelectTrigger className="w-full sm:w-[180px]">
                                 <SelectValue placeholder="All Specializations" />
                             </SelectTrigger>
                             <SelectContent>
@@ -161,7 +161,7 @@ export default function ClubsPage() {
                             </SelectContent>
                         </Select>
                         <Select value={yearFilter} onValueChange={setYearFilter}>
-                            <SelectTrigger className="w-[140px]">
+                            <SelectTrigger className="w-full sm:w-[140px]">
                                 <SelectValue placeholder="All Years" />
                             </SelectTrigger>
                             <SelectContent>
@@ -172,7 +172,7 @@ export default function ClubsPage() {
                                 <SelectItem value="4th">4th Year</SelectItem>
                             </SelectContent>
                         </Select>
-                        <Button variant="outline" size="icon">
+                        <Button variant="outline" size="icon" className="shrink-0">
                             <Filter className="h-4 w-4" />
                         </Button>
                     </div>

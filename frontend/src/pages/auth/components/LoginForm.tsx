@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, LogIn, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, LogIn, Loader2, Download, FileDown } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -15,15 +15,28 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 import { useAuth } from '../hooks/useAuth';
 import { useLoginForm, usePasswordVisibility } from '../hooks/useAuthForm';
+
+interface BeforeInstallPromptEvent extends Event {
+    prompt(): Promise<void>;
+    userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
 
 export default function LoginForm() {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
     const { form, onSubmit, isSubmitting } = useLoginForm();
     const { showPassword, togglePassword } = usePasswordVisibility();
+    const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+    const [canInstall, setCanInstall] = useState(false);
 
     // Redirect if already authenticated
     useEffect(() => {
@@ -32,9 +45,77 @@ export default function LoginForm() {
         }
     }, [isAuthenticated, navigate]);
 
+    // PWA Install prompt handler
+    useEffect(() => {
+        const handler = (e: Event) => {
+            e.preventDefault();
+            setDeferredPrompt(e as BeforeInstallPromptEvent);
+            setCanInstall(true);
+        };
+
+        window.addEventListener('beforeinstallprompt', handler);
+
+        return () => {
+            window.removeEventListener('beforeinstallprompt', handler);
+        };
+    }, []);
+
+    const handleInstallPWA = async () => {
+        if (!deferredPrompt) {
+            toast.error('PWA installation not available on this browser');
+            return;
+        }
+
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+
+        if (outcome === 'accepted') {
+            toast.success('App installed successfully!');
+            setCanInstall(false);
+        }
+
+        setDeferredPrompt(null);
+    };
+
+    const handleDownloadPage = () => {
+        // Save current page as HTML
+        const pageContent = document.documentElement.outerHTML;
+        const blob = new Blob([pageContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'campushub-login.html';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        toast.success('Page downloaded successfully!');
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
-            <Card className="w-full max-w-md p-6">
+            <Card className="w-full max-w-md p-6 relative">
+                {/* Download Menu - Top Right */}
+                <div className="absolute top-4 right-4">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button size="icon" variant="ghost" className="h-8 w-8">
+                                <Download className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={handleInstallPWA} className="cursor-pointer">
+                                <Download className="mr-2 h-4 w-4" />
+                                <span>Install as App</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleDownloadPage} className="cursor-pointer">
+                                <FileDown className="mr-2 h-4 w-4" />
+                                <span>Download Page</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+
                 <div className="text-center mb-6">
                     <div className="flex justify-center mb-4">
                         <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
@@ -161,8 +242,6 @@ export default function LoginForm() {
                         </Link>
                     </p>
                 </div>
-
-
             </Card>
         </div>
     );
