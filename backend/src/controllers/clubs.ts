@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import * as model from '../model.js';
+import * as model from '../models/index.js';
 
 // ============================================
 // Club Settings

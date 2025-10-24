@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
-import { db } from '../db.js';
+import * as model from '../models/index.js';
+// import db from '../db.js';
 
 export const getAllItems = (req: Request, res: Response) => {
   try {
-    const items = db.prepare('SELECT * FROM marketplace_items ORDER BY created_at DESC').all();
+    const items = model.getAllMarketplaceItems();
     res.json(items);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
@@ -12,7 +13,7 @@ export const getAllItems = (req: Request, res: Response) => {
 
 export const getItem = (req: Request, res: Response) => {
   try {
-    const item = db.prepare('SELECT * FROM marketplace_items WHERE id = ?').get(req.params.id);
+    const item = model.getMarketplaceItem(parseInt(req.params.id));
     if (!item) {
       return res.status(404).json({ error: 'Item not found' });
     }
@@ -23,44 +24,52 @@ export const getItem = (req: Request, res: Response) => {
 };
 
 export const createItem = (req: Request, res: Response) => {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] 🛒 CREATE Marketplace Item Request:`, JSON.stringify(req.body, null, 2));
+
   try {
     const { title, description, price, type, category, condition, image, seller_id, posted_at } = req.body;
-    
+
+    console.log(`[${timestamp}] 🔍 Fetching seller info for seller_id:`, seller_id || 1);
+
     // Fetch seller info from users table
-    const seller = db.prepare('SELECT name, avatar FROM users WHERE id = ?').get(seller_id || 1) as any;
+    const seller = model.getUser(seller_id || 1) as any;
     if (!seller) {
+      console.error(`[${timestamp}] ❌ Seller not found:`, seller_id);
       return res.status(400).json({ error: 'Seller not found' });
     }
-    
-    const result = db.prepare(`
-      INSERT INTO marketplace_items (title, description, price, type, category, condition, image, seller_id, seller_name, seller_avatar, seller_rating, posted_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      title, 
-      description, 
-      price, 
-      type, 
-      category, 
-      condition, 
-      image || null, 
-      seller_id || 1, 
-      seller.name,
-      seller.avatar,
-      4.5, // Default rating
-      posted_at || 'just now'
-    );
-    
+
+    console.log(`[${timestamp}] ✅ Seller found:`, seller.name);
+
+    const result = model.createMarketplaceItem({
+      title,
+      description,
+      price,
+      type,
+      category,
+      condition,
+      image,
+      seller_id: seller_id || 1,
+      seller_name: seller.name,
+      seller_avatar: seller.avatar,
+      seller_rating: 4.5,
+      posted_at: posted_at || 'just now'
+    });
+
+    console.log(`[${timestamp}] ✅ Marketplace item created with ID:`, result.lastInsertRowid);
+    console.log(`[${timestamp}] 📊 Changes:`, result.changes);
+
     res.status(201).json({ id: result.lastInsertRowid, message: 'Item created successfully' });
   } catch (error) {
+    console.error(`[${timestamp}] ❌ Error creating marketplace item:`, (error as Error).message);
+    console.error(`[${timestamp}] 📚 Stack:`, (error as Error).stack);
     res.status(400).json({ error: (error as Error).message });
   }
 };
 
 export const updateItem = (req: Request, res: Response) => {
   try {
-    const fields = Object.keys(req.body).map(k => `${k} = ?`).join(', ');
-    const values = [...Object.values(req.body), req.params.id];
-    db.prepare(`UPDATE marketplace_items SET ${fields} WHERE id = ?`).run(...values);
+    model.updateMarketplaceItem(parseInt(req.params.id), req.body);
     res.json({ success: true, message: 'Item updated successfully' });
   } catch (error) {
     res.status(400).json({ error: (error as Error).message });
@@ -69,7 +78,7 @@ export const updateItem = (req: Request, res: Response) => {
 
 export const deleteItem = (req: Request, res: Response) => {
   try {
-    db.prepare('DELETE FROM marketplace_items WHERE id = ?').run(req.params.id);
+    model.deleteMarketplaceItem(parseInt(req.params.id));
     res.json({ success: true, message: 'Item deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });

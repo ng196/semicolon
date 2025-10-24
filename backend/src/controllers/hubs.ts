@@ -1,29 +1,43 @@
 import { Request, Response } from 'express';
-import * as model from '../model.js';
+import * as model from '../models/index.js';
 
 export const createHub = (req: Request, res: Response) => {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] 🏢 CREATE Hub Request:`, JSON.stringify(req.body, null, 2));
+
   try {
     const { name, type, description, creator_id, icon, specialization, year, color, interests } = req.body;
+
+    console.log(`[${timestamp}] 💾 Creating hub in database...`);
     const result = model.createHub(name, type, description, creator_id, { icon, specialization, year, color });
     const hubId = result.lastInsertRowid;
 
+    console.log(`[${timestamp}] ✅ Hub created with ID:`, hubId);
+    console.log(`[${timestamp}] 📊 Changes:`, result.changes);
+
     // Add creator as leader for clubs, creator for projects
     const creatorRole = type === 'Club' ? 'leader' : 'creator';
+    console.log(`[${timestamp}] 👤 Adding creator as ${creatorRole}...`);
     model.addHubMember(hubId as number, creator_id, creatorRole);
 
     // Create club settings if this is a club
     if (type === 'Club') {
+      console.log(`[${timestamp}] ⚙️  Creating club settings...`);
       model.createClubSettings(hubId as number, false, true);
     }
 
     if (interests && Array.isArray(interests)) {
+      console.log(`[${timestamp}] 🏷️  Adding ${interests.length} interests...`);
       interests.forEach((interest: string) => {
         model.addHubInterest(hubId as number, interest);
       });
     }
 
+    console.log(`[${timestamp}] ✅ Hub creation complete`);
     res.status(201).json({ id: hubId, message: 'Hub created successfully' });
   } catch (error) {
+    console.error(`[${timestamp}] ❌ Error creating hub:`, (error as Error).message);
+    console.error(`[${timestamp}] 📚 Stack:`, (error as Error).stack);
     res.status(400).json({ error: (error as Error).message });
   }
 };

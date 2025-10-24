@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import { generateToken, revokeToken, verifyToken, authMiddleware, getWhitelistStats } from '../middleware/auth.js';
-import { getUserByEmail, createUser, getUser } from '../model.js';
+import { getUserByEmail, createUser, getUser } from '../models/index.js';
 
 const router = express.Router();
 
