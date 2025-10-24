@@ -115,7 +115,7 @@ export const Step3ProfileInfo: React.FC<Step3Props> = ({
                     onClick={handleSkip}
                     className="text-gray-500 hover:text-gray-700"
                 >
-                    Skip for now - I'll add this later
+                    Next
                 </Button>
             </div>
 

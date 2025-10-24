@@ -1,8 +1,9 @@
-import { Plus, Users as UsersIcon, Calendar, ShoppingBag, UserPlus, AlertCircle, TrendingUp, GraduationCap, Heart } from "lucide-react";
+import { Plus, Users as UsersIcon, Calendar, ShoppingBag, UserPlus, TrendingUp, GraduationCap, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { CategoryBadge } from "@/components/CategoryBadge";
+import { ProfileMenu } from "@/components/ProfileMenu";
 import { useDashboardEvents } from "./events/hooks";
 import { useAuth } from "@/pages/auth/contexts/AuthContext";
 import marketplaceData from "@/data/marketplace.json";
@@ -39,10 +40,7 @@ export default function Dashboard() {
               placeholder="Search..."
               className="w-32 sm:w-48 md:w-64"
             />
-            <Button size="icon" variant="ghost" className="relative">
-              <AlertCircle className="h-5 w-5" />
-              <span className="absolute right-0 top-0 h-2 w-2 rounded-full bg-red-500" />
-            </Button>
+            <ProfileMenu />
           </div>
         </div>
       </header>

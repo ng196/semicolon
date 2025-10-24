@@ -2,12 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Progress } from '../../../components/ui/progress';
 import { Button } from '../../../components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, FileDown } from 'lucide-react';
+import { toast } from 'sonner';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '../../../components/ui/dropdown-menu';
 import { onboardingStorage, OnboardingData } from './OnboardingStorage';
 import { Step1EmailPassword } from './steps/Step1EmailPassword';
 import { Step2UserDetails } from './steps/Step2UserDetails';
 import { Step3ProfileInfo } from './steps/Step3ProfileInfo';
 import { Step4Interests } from './steps/Step4Interests';
+
+interface BeforeInstallPromptEvent extends Event {
+    prompt(): Promise<void>;
+    userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
 
 interface OnboardingWizardProps {
     onComplete: (data: OnboardingData) => void;
@@ -18,6 +30,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
     const [formData, setFormData] = useState<OnboardingData>({});
     const [stepValidation, setStepValidation] = useState<Record<number, boolean>>({});
     const [isLoading, setIsLoading] = useState(false);
+    const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+    const [canInstall, setCanInstall] = useState(false);
 
     const totalSteps = 4;
     const progressPercentage = (currentStep / totalSteps) * 100;
@@ -30,6 +44,53 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
             setCurrentStep(stored.currentStep);
         }
     }, []);
+
+    // PWA Install prompt handler
+    useEffect(() => {
+        const handler = (e: Event) => {
+            e.preventDefault();
+            setDeferredPrompt(e as BeforeInstallPromptEvent);
+            setCanInstall(true);
+        };
+
+        window.addEventListener('beforeinstallprompt', handler);
+
+        return () => {
+            window.removeEventListener('beforeinstallprompt', handler);
+        };
+    }, []);
+
+    const handleInstallPWA = async () => {
+        if (!deferredPrompt) {
+            toast.error('PWA installation not available on this browser');
+            return;
+        }
+
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+
+        if (outcome === 'accepted') {
+            toast.success('App installed successfully!');
+            setCanInstall(false);
+        }
+
+        setDeferredPrompt(null);
+    };
+
+    const handleDownloadPage = () => {
+        // Save current page as HTML
+        const pageContent = document.documentElement.outerHTML;
+        const blob = new Blob([pageContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'campushub-signup.html';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        toast.success('Page downloaded successfully!');
+    };
 
     // Save data whenever it changes
     useEffect(() => {
@@ -141,7 +202,28 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-            <Card className="w-full max-w-md">
+            <Card className="w-full max-w-md relative">
+                {/* Download Menu - Top Right */}
+                <div className="absolute top-4 right-4 z-10">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button size="icon" variant="ghost" className="h-8 w-8">
+                                <Download className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={handleInstallPWA} className="cursor-pointer">
+                                <Download className="mr-2 h-4 w-4" />
+                                <span>Install as App</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleDownloadPage} className="cursor-pointer">
+                                <FileDown className="mr-2 h-4 w-4" />
+                                <span>Download Page</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl font-bold">Join CampusHub</CardTitle>
                     <p className="text-gray-600 text-sm">{getStepDescription()}</p>
