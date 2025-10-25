@@ -92,6 +92,36 @@ export function RequestsOriginal() {
     }
   };
 
+  const handleViewRequest = (request: Request) => {
+    console.log('View request:', request.id);
+    alert(`Viewing details for: ${request.title}`);
+  };
+
+  const handleSupportRequest = (request: Request) => {
+    console.log('Support request:', request.id);
+    alert(`You supported: ${request.title}`);
+  };
+
+  const handleCommentRequest = (request: Request) => {
+    console.log('Comment on request:', request.id);
+    alert(`Opening comments for: ${request.title}`);
+  };
+
+  const handleShareRequest = (request: Request) => {
+    console.log('Share request:', request.id);
+    alert(`Sharing: ${request.title}`);
+  };
+
+  const handleCreateRequest = () => {
+    console.log('Create new request');
+    alert('Opening new request form...');
+  };
+
+  const handleCreateClassRequest = () => {
+    console.log('Create class request');
+    alert('Opening class request form...');
+  };
+
   const filteredRequests = activeTab === "all"
     ? requests
     : activeTab === "my"
@@ -112,11 +142,18 @@ export function RequestsOriginal() {
               </p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" className="bg-orange-500 text-white hover:bg-orange-600">
+              <Button 
+                variant="outline" 
+                className="bg-orange-500 text-white hover:bg-orange-600"
+                onClick={handleCreateClassRequest}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Class Request
               </Button>
-              <Button className="bg-primary hover:bg-primary/90">
+              <Button 
+                className="bg-primary hover:bg-primary/90"
+                onClick={handleCreateRequest}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 New Request
               </Button>
@@ -211,12 +248,16 @@ export function RequestsOriginal() {
           {!loading && !error && (
             <div className="space-y-4">
               {filteredRequests.map((request) => (
-                <Card key={request.id} className="overflow-hidden transition-all hover:shadow-lg">
+                <Card 
+                  key={request.id} 
+                  className="overflow-hidden transition-all hover:shadow-lg cursor-pointer"
+                  onClick={() => handleViewRequest(request)}
+                >
                   <div className="p-6">
                     <div className="mb-4 flex items-start justify-between">
                       <div className="flex-1">
                         <div className="mb-2 flex items-start gap-3">
-                          <h3 className="text-xl font-semibold text-foreground hover:text-primary transition-colors cursor-pointer">
+                          <h3 className="text-xl font-semibold text-foreground hover:text-primary transition-colors">
                             {request.title}
                           </h3>
                           <div className="flex gap-2">
@@ -229,10 +270,26 @@ export function RequestsOriginal() {
                         </p>
                       </div>
                       <div className="flex gap-1">
-                        <Button size="icon" variant="ghost" className="h-8 w-8">
+                        <Button 
+                          size="icon" 
+                          variant="ghost" 
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewRequest(request);
+                          }}
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button size="icon" variant="ghost" className="h-8 w-8">
+                        <Button 
+                          size="icon" 
+                          variant="ghost" 
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleShareRequest(request);
+                          }}
+                        >
                           <Share2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -331,12 +388,28 @@ export function RequestsOriginal() {
                       </div>
                       <div className="flex gap-2">
                         {request.supporters !== undefined && (
-                          <Button size="sm" variant="outline" className="gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="gap-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSupportRequest(request);
+                            }}
+                          >
                             <ThumbsUp className="h-4 w-4" />
                             Support
                           </Button>
                         )}
-                        <Button size="sm" variant="outline" className="gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="gap-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCommentRequest(request);
+                          }}
+                        >
                           <MessageSquare className="h-4 w-4" />
                           Comment
                         </Button>
