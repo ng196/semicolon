@@ -19,6 +19,7 @@ import { AuthGuard, GuestGuard } from "./pages/auth/components/AuthGuard";
 const Login = lazy(() => import("./pages/auth/Login"));
 const Signup = lazy(() => import("./pages/auth/Signup"));
 const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
+const LandingPage = lazy(() => import("./pages/LandingPage"));
 import { OnboardingPage } from "./pages/auth/onboarding/OnboardingPage";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 import { OfflineIndicator } from "./components/OfflineIndicator";
@@ -36,6 +37,18 @@ const App = () => (
         <OfflineIndicator />
         <BrowserRouter>
           <Routes>
+            {/* Landing Page - accessible only when NOT logged in */}
+            <Route
+              path="/"
+              element={
+                <GuestGuard>
+                  <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-black">Loading...</div>}>
+                    <LandingPage />
+                  </Suspense>
+                </GuestGuard>
+              }
+            />
+
             {/* Auth routes - accessible only when NOT logged in */}
             <Route
               path="/auth/login"
@@ -76,7 +89,7 @@ const App = () => (
 
             {/* Protected routes - require authentication */}
             <Route
-              path="/"
+              path="/dashboard"
               element={
                 <AuthGuard>
                   <AppLayout>

@@ -165,6 +165,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
                         data={formData}
                         onDataChange={updateFormData}
                         onValidationChange={(isValid) => updateStepValidation(3, isValid)}
+                        onNext={nextStep}
                     />
                 );
             case 4:
@@ -173,6 +174,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
                         data={formData}
                         onDataChange={updateFormData}
                         onValidationChange={(isValid) => updateStepValidation(4, isValid)}
+                        onComplete={handleComplete}
                     />
                 );
             default:
