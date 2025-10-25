@@ -10,12 +10,14 @@ interface Step4Props {
     data: OnboardingData;
     onDataChange: (data: Partial<OnboardingData>) => void;
     onValidationChange: (isValid: boolean) => void;
+    onComplete: () => void;
 }
 
 export const Step4Interests: React.FC<Step4Props> = ({
     data,
     onDataChange,
     onValidationChange,
+    onComplete,
 }) => {
     const [selectedInterests, setSelectedInterests] = useState<string[]>(data.interests || []);
     const [avatarUrl, setAvatarUrl] = useState<string>(data.avatar || '');
@@ -95,6 +97,7 @@ export const Step4Interests: React.FC<Step4Props> = ({
     // Handle skip
     const handleSkip = () => {
         onDataChange({ interests: [], avatar: '' });
+        onComplete();
     };
 
     // This step is always valid (optional fields)
@@ -189,7 +192,7 @@ export const Step4Interests: React.FC<Step4Props> = ({
                     onClick={handleSkip}
                     className="text-gray-500 hover:text-gray-700"
                 >
-                    Continue
+                    Skip - I'll do it later
                 </Button>
             </div>
 

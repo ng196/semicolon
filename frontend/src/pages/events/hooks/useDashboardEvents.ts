@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { eventsApi } from '@/services/api';
+import eventsData from '@/data/events.json';
 
 export const useDashboardEvents = () => {
     const [events, setEvents] = useState([]);
@@ -12,10 +12,14 @@ export const useDashboardEvents = () => {
     const loadEvents = async () => {
         try {
             setLoading(true);
-            const data = await eventsApi.getDashboard();
-            setEvents(data);
+            // Use static events data for now
+            const data = eventsData;
+            // Filter for upcoming events and show first 3 for dashboard
+            const upcomingEvents = data.slice(0, 3);
+            setEvents(upcomingEvents);
         } catch (err) {
             console.error('Failed to load dashboard events:', err);
+            setEvents([]);
         } finally {
             setLoading(false);
         }

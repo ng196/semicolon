@@ -1,0 +1,374 @@
+/* Landing Page Styles */
+
+/* Beam Background - Subtle animated gradient blob */
+.beam-background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: #0a0a0a;
+  overflow: hidden;
+}
+
+.beam-layer {
+  position: absolute;
+  will-change: transform;
+  filter: blur(80px);
+  opacity: 0.6;
+}
+
+.beam-layer-1 {
+  width: 500px;
+  height: 500px;
+  top: 10%;
+  right: 15%;
+  background: radial-gradient(
+    circle,
+    rgba(99, 102, 241, 0.3) 0%,
+    rgba(139, 92, 246, 0.2) 30%,
+    rgba(168, 85, 247, 0.1) 60%,
+    transparent 100%
+  );
+  animation: float-blob 20s ease-in-out infinite, morph-blob 8s ease-in-out infinite;
+}
+
+.beam-layer-2 {
+  width: 400px;
+  height: 400px;
+  bottom: 20%;
+  left: 10%;
+  background: radial-gradient(
+    circle,
+    rgba(6, 182, 212, 0.25) 0%,
+    rgba(14, 165, 233, 0.15) 30%,
+    rgba(34, 211, 238, 0.08) 60%,
+    transparent 100%
+  );
+  animation: float-blob 25s ease-in-out infinite reverse, morph-blob 10s ease-in-out infinite 2s;
+}
+
+.beam-layer-3 {
+  width: 450px;
+  height: 450px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(168, 85, 247, 0.2) 0%,
+    rgba(217, 70, 239, 0.12) 30%,
+    rgba(236, 72, 153, 0.06) 60%,
+    transparent 100%
+  );
+  animation: float-blob 30s ease-in-out infinite, morph-blob 12s ease-in-out infinite 4s;
+}
+
+@keyframes float-blob {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 30px) scale(0.9);
+  }
+}
+
+@keyframes morph-blob {
+  0%, 100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  50% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .beam-layer {
+    animation: none;
+  }
+}
+
+/* Landing Page CSS Variables */
+:root {
+  --landing-bg-primary: #0a0a0a;
+  --landing-bg-secondary: #1a1a1a;
+  --landing-text-primary: #ffffff;
+  --landing-text-secondary: #a0a0a0;
+  --landing-accent-primary: #6366f1;
+  --landing-accent-secondary: #f59e0b;
+  --landing-border: rgba(255, 255, 255, 0.1);
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Fade-in animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in {
+    animation: none;
+  }
+}
+
+/* Feature Card Styles */
+.feature-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  animation: fade-in 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.feature-card:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+}
+
+.feature-card-content {
+  position: relative;
+  z-index: 1;
+}
+
+.feature-icon-wrapper {
+  width: 3.5rem;
+  height: 3.5rem;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon-wrapper {
+  background: rgba(99, 102, 241, 0.2);
+  transform: translateY(-4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature-card {
+    animation: none;
+    opacity: 1;
+  }
+  
+  .feature-card:hover {
+    transform: none;
+  }
+  
+  .feature-card:hover .feature-icon-wrapper {
+    transform: none;
+  }
+}
+
+
+/* Responsive Design Optimizations */
+
+/* Mobile (320px - 767px) */
+@media (max-width: 767px) {
+  .beam-background {
+    /* Reduce animation complexity on mobile for better performance */
+    background: linear-gradient(to bottom, #0a0a0a, #1a1a1a);
+  }
+  
+  .beam-layer-2,
+  .beam-layer-3 {
+    /* Hide extra layers on mobile to improve performance */
+    display: none;
+  }
+}
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .feature-card {
+    padding: 1.5rem;
+  }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+  .feature-card {
+    padding: 2rem;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .feature-card:hover {
+    /* Disable hover effects on touch devices */
+    transform: none;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+  }
+  
+  .feature-card:active {
+    /* Add active state for touch feedback */
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+
+/* Scroll Animation Classes */
+.scroll-fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.scroll-fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-slide-left {
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.scroll-slide-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.scroll-slide-right {
+  opacity: 0;
+  transform: translateX(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.scroll-slide-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Hover feedback for interactive elements */
+.interactive-element {
+  transition: all 0.2s ease-out;
+}
+
+.interactive-element:hover {
+  transform: translateY(-2px);
+}
+
+.interactive-element:active {
+  transform: translateY(0);
+}
+
+/* Smooth easing functions */
+:root {
+  --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-in-out-back: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Disable animations for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-fade-in,
+  .scroll-slide-left,
+  .scroll-slide-right {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  
+  .interactive-element:hover,
+  .interactive-element:active {
+    transform: none;
+  }
+}
+
+
+/* Accessibility - Focus Indicators */
+*:focus-visible {
+  outline: 2px solid var(--landing-accent-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--landing-accent-primary);
+  outline-offset: 4px;
+}
+
+/* Skip to main content link (for screen readers) */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--landing-accent-primary);
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 100;
+  border-radius: 0 0 4px 0;
+}
+
+.skip-to-main:focus {
+  top: 0;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .feature-card {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .feature-card:hover {
+    border-color: rgba(99, 102, 241, 0.8);
+  }
+}
+
+/* Ensure text remains readable */
+.text-white\/60 {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.text-white\/70 {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.text-white\/80 {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Ensure minimum touch target size (44x44px) for mobile */
+@media (max-width: 767px) {
+  button,
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

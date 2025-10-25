@@ -1,46 +1,79 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CampusHub - Student Portal</title>
-    <meta name="description" content="Connect with classmates, discover events, join clubs, and engage with your campus community through CampusHub." />
-    <meta name="author" content="CampusHub" />
 
-    <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#6366f1" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="CampusHub" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="application-name" content="CampusHub" />
-    
-    <!-- iOS specific meta tags -->
-    <meta name="apple-touch-fullscreen" content="yes" />
-    <link rel="apple-touch-icon" href="/placeholder.svg" />
-    <link rel="apple-touch-startup-image" href="/placeholder.svg" />
-    
-    <!-- Android specific meta tags -->
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="mobile-web-app-status-bar-style" content="default" />
-    
-    <!-- Manifest will be injected by Vite PWA plugin -->
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/placeholder.svg" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saksham - Unify Your College Experience</title>
+  <meta name="description"
+    content="Saksham is a unified platform designed to streamline college life for students. Connect with clubs, collaborate with peers, track attendance, manage grades, and stay ahead." />
+  <meta name="author" content="Saksham" />
+  <meta name="keywords"
+    content="college platform, student management, club collaboration, peer networking, attendance tracking, grade management, campus events" />
 
-    <meta property="og:title" content="CampusHub - Student Portal" />
-    <meta property="og:description" content="Connect with classmates, discover events, join clubs, and engage with your campus community through CampusHub." />
-    <meta property="og:type" content="website" />
-    
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#6366f1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="CampusHub" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="application-name" content="CampusHub" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <!-- <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" /> -->
-  </head>
+  <!-- iOS specific meta tags -->
+  <meta name="apple-touch-fullscreen" content="yes" />
+  <link rel="apple-touch-icon" href="/placeholder.svg" />
+  <link rel="apple-touch-startup-image" href="/placeholder.svg" />
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <!-- Android specific meta tags -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-status-bar-style" content="default" />
+
+  <!-- Manifest will be injected by Vite PWA plugin -->
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/placeholder.svg" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Saksham - Unify Your College Experience" />
+  <meta property="og:description"
+    content="A unified platform designed to streamline college life for students. Connect with clubs, collaborate with peers, and stay ahead." />
+  <meta property="og:site_name" content="Saksham" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Saksham - Unify Your College Experience" />
+  <meta name="twitter:description"
+    content="A unified platform designed to streamline college life for students. Connect with clubs, collaborate with peers, and stay ahead." />
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Saksham",
+      "description": "A unified platform designed to streamline college life for students",
+      "url": "https://saksham.edu",
+      "logo": "https://saksham.edu/logo.png",
+      "sameAs": [
+        "https://www.facebook.com/saksham",
+        "https://www.twitter.com/saksham",
+        "https://www.linkedin.com/company/saksham",
+        "https://www.instagram.com/saksham"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91-1234-567890",
+        "contactType": "Customer Support",
+        "email": "support@saksham.edu"
+      }
+    }
+    </script>
+</body>
+
 </html>

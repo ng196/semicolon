@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
+import { TopNavigation } from "@/components/TopNavigation";
 import { MobileNav } from "@/components/MobileNav";
 
 interface AppLayoutProps {
@@ -9,16 +8,12 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
     return (
-        <SidebarProvider>
-            <div className="flex min-h-screen w-full">
-                <div className="hidden md:block">
-                    <AppSidebar />
-                </div>
-                <div className="flex-1 pb-16 md:pb-0">
-                    {children}
-                </div>
+        <div className="flex min-h-screen w-full flex-col">
+            <TopNavigation />
+            <div className="flex-1 pb-16 md:pb-0">
+                {children}
             </div>
             <MobileNav />
-        </SidebarProvider>
+        </div>
     );
 }
