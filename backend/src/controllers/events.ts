@@ -1,29 +1,29 @@
 import { Request, Response } from 'express';
 import * as model from '../models/index.js';
 
-export const getAllEvents = (req: Request, res: Response) => {
+export const getAllEvents = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
-    const events = model.getAllEvents(userId);
+    const events = await model.getAllEvents(userId);
     res.json(events);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
 };
 
-export const getEvent = (req: Request, res: Response) => {
+export const getEvent = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
-    const event = model.getEvent(parseInt(req.params.id), userId);
+    const event = await model.getEvent(parseInt(req.params.id), userId);
 
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
     }
 
     // Check visibility permissions
-    const clubEvent = model.getClubEventInfo(parseInt(req.params.id)) as any;
+    const clubEvent = await model.getClubEventInfo(parseInt(req.params.id)) as any;
     if (clubEvent) {
-      const membership = model.getUserClubRole(clubEvent.club_id, userId || 0);
+      const membership = await model.getUserClubRole(clubEvent.club_id, userId || 0);
 
       if (clubEvent.visibility === 'private' && (!membership || !['leader', 'admin', 'creator'].includes(membership))) {
         return res.status(403).json({ error: 'Access denied' });
@@ -40,7 +40,7 @@ export const getEvent = (req: Request, res: Response) => {
   }
 };
 
-export const createEvent = (req: Request, res: Response) => {
+export const createEvent = async (req: Request, res: Response) => {
   const timestamp = new Date().toISOString();
   console.log(`[${timestamp}] 📅 CREATE Event Request:`, JSON.stringify(req.body, null, 2));
 
@@ -58,7 +58,7 @@ export const createEvent = (req: Request, res: Response) => {
     // Check if user has permission to create events for this club
     if (club_id) {
       console.log(`[${timestamp}] 🔍 Checking permissions for club_id:`, club_id);
-      const role = model.getUserClubRole(club_id, userId);
+      const role = await model.getUserClubRole(club_id, userId);
 
       console.log(`[${timestamp}] 👥 Role:`, role);
 
@@ -69,13 +69,13 @@ export const createEvent = (req: Request, res: Response) => {
     }
 
     // Get club name for organizer field
-    const club = model.getHub(club_id) as any;
+    const club = await model.getHub(club_id) as any;
     const organizer = club ? club.name : 'Unknown';
     console.log(`[${timestamp}] 🏢 Organizer:`, organizer);
 
     // Create event
     console.log(`[${timestamp}] 💾 Inserting event into database...`);
-    const result = model.createEvent({
+    const result = await model.createEvent({
       name,
       category,
       description,
@@ -89,12 +89,11 @@ export const createEvent = (req: Request, res: Response) => {
     });
 
     console.log(`[${timestamp}] ✅ Event created with ID:`, result.lastInsertRowid);
-    console.log(`[${timestamp}] 📊 Changes:`, result.changes);
 
     // Link event to club
     if (club_id) {
       console.log(`[${timestamp}] 🔗 Linking event to club...`);
-      model.linkEventToClub(result.lastInsertRowid as number, club_id, visibility, target_audience);
+      await model.linkEventToClub(result.lastInsertRowid as number, club_id, visibility, target_audience);
       console.log(`[${timestamp}] ✅ Event linked to club`);
     }
 
@@ -106,7 +105,7 @@ export const createEvent = (req: Request, res: Response) => {
   }
 };
 
-export const updateEvent = (req: Request, res: Response) => {
+export const updateEvent = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     const { visibility, target_audience, ...eventData } = req.body;
@@ -116,9 +115,9 @@ export const updateEvent = (req: Request, res: Response) => {
     }
 
     // Check permissions
-    const clubEvent = model.getClubEventInfo(parseInt(req.params.id)) as any;
+    const clubEvent = await model.getClubEventInfo(parseInt(req.params.id)) as any;
     if (clubEvent) {
-      const role = model.getUserClubRole(clubEvent.club_id, userId);
+      const role = await model.getUserClubRole(clubEvent.club_id, userId);
 
       if (!role || !['leader', 'admin', 'creator'].includes(role)) {
         return res.status(403).json({ error: 'Only club leaders, admins, and creators can edit events' });
@@ -127,7 +126,7 @@ export const updateEvent = (req: Request, res: Response) => {
 
     // Update event
     if (Object.keys(eventData).length > 0) {
-      model.updateEvent(parseInt(req.params.id), eventData);
+      await model.updateEvent(parseInt(req.params.id), eventData);
     }
 
     // Update club event settings
@@ -137,7 +136,7 @@ export const updateEvent = (req: Request, res: Response) => {
       if (target_audience) updates.target_audience = target_audience;
 
       if (Object.keys(updates).length > 0) {
-        model.updateClubEventSettings(parseInt(req.params.id), updates);
+        await model.updateClubEventSettings(parseInt(req.params.id), updates);
       }
     }
 
@@ -147,7 +146,7 @@ export const updateEvent = (req: Request, res: Response) => {
   }
 };
 
-export const deleteEvent = (req: Request, res: Response) => {
+export const deleteEvent = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
 
@@ -156,26 +155,26 @@ export const deleteEvent = (req: Request, res: Response) => {
     }
 
     // Check permissions
-    const clubEvent = model.getClubEventInfo(parseInt(req.params.id)) as any;
+    const clubEvent = await model.getClubEventInfo(parseInt(req.params.id)) as any;
     if (clubEvent) {
-      const role = model.getUserClubRole(clubEvent.club_id, userId);
+      const role = await model.getUserClubRole(clubEvent.club_id, userId);
 
       if (!role || !['leader', 'admin', 'creator'].includes(role)) {
         return res.status(403).json({ error: 'Only club leaders, admins, and creators can delete events' });
       }
     }
 
-    model.deleteEvent(parseInt(req.params.id));
+    await model.deleteEvent(parseInt(req.params.id));
     res.json({ success: true, message: 'Event deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
 };
 
-export const getDashboardEvents = (req: Request, res: Response) => {
+export const getDashboardEvents = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
-    const events = model.getDashboardEvents(userId);
+    const events = await model.getDashboardEvents(userId);
     res.json(events);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });

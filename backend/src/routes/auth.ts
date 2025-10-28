@@ -19,7 +19,7 @@ router.post('/login', async (req, res) => {
         }
 
         // Find user by email
-        const user = getUserByEmail(email) as any;
+        const user = await getUserByEmail(email) as any;
         if (!user) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
@@ -60,7 +60,7 @@ router.post('/signup', async (req, res) => {
         }
 
         // Check if user already exists
-        const existingUser = getUserByEmail(email);
+        const existingUser = await getUserByEmail(email);
         if (existingUser) {
             return res.status(409).json({ error: 'Email already registered' });
         }
@@ -70,7 +70,7 @@ router.post('/signup', async (req, res) => {
         const password_hash = await bcrypt.hash(password, saltRounds);
 
         // Create user
-        const result = createUser(
+        const result = await createUser(
             email,
             password_hash,
             username || email.split('@')[0],
@@ -78,7 +78,7 @@ router.post('/signup', async (req, res) => {
         );
 
         // Get created user
-        const newUser = getUser(result.lastInsertRowid as number) as any;
+        const newUser = await getUser(result.lastInsertRowid as number) as any;
 
         // Generate token
         const token = generateToken(newUser.id, newUser.email);
@@ -136,9 +136,9 @@ router.get('/validate', authMiddleware, (req, res) => {
  * GET /auth/profile
  * Get current user profile
  */
-router.get('/profile', authMiddleware, (req, res) => {
+router.get('/profile', authMiddleware, async (req, res) => {
     try {
-        const user = getUser(req.user!.userId) as any;
+        const user = await getUser(req.user!.userId) as any;
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -156,7 +156,7 @@ router.get('/profile', authMiddleware, (req, res) => {
  * PUT /auth/profile
  * Update current user profile
  */
-router.put('/profile', authMiddleware, (req, res) => {
+router.put('/profile', authMiddleware, async (req, res) => {
     try {
         const { name, username, avatar, specialization, year, interests } = req.body;
 
@@ -170,11 +170,11 @@ router.put('/profile', authMiddleware, (req, res) => {
         if (interests !== undefined) updates.interests = JSON.stringify(interests);
 
         // Update user
-        const { updateUser } = require('../model.js');
-        updateUser(req.user!.userId, updates);
+        const { updateUser } = await import('../models/index.js');
+        await updateUser(req.user!.userId, updates);
 
         // Get updated user
-        const user = getUser(req.user!.userId) as any;
+        const user = await getUser(req.user!.userId) as any;
         const { password_hash, ...userData } = user;
 
         res.json(userData);

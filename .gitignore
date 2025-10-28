@@ -15,6 +15,8 @@ files
 backend/database/*.db
 backend/database/*.db-shm
 backend/database/*.db-wal
+
+test
 *.db
 *.db-shm
 *.db-wal
@@ -22,5 +24,5 @@ backend/database/*.db-wal
 # Logs
 backend/apilogs.txt
 *.log
-
-
+AGENTS.md
+specs

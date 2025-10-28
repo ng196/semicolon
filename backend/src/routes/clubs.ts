@@ -26,8 +26,12 @@ router.get('/:id/events', clubController.getClubEvents);
 router.put('/:id/events/:eventId/visibility', clubController.updateEventVisibility);
 
 // Membership
+router.get('/:id/members', clubController.getClubMembers);
+router.get('/:id/members/:userId/check', clubController.checkClubMembership);
 router.post('/:id/join', clubController.joinPublicClub);
 router.delete('/:id/leave', clubController.leaveClub);
+router.post('/:id/members', clubController.addClubMember);
+router.delete('/:id/members', clubController.removeClubMember);
 router.put('/:id/members/:userId/role', clubController.updateMemberRole);
 
 // Delete club

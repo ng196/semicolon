@@ -1,10 +1,7 @@
+// Import config first to load environment variables
+import { config } from './src/config.js';
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 import authRoutes from './src/routes/auth.js';
 import userRoutes from './src/routes/users.js';
 import hubRoutes from './src/routes/hubs.js';
@@ -16,7 +13,7 @@ import rsvpRoutes from './src/routes/rsvps.js';
 import { authMiddleware } from './src/middleware/auth.js';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = config.port;
 
 // CORS configuration from environment variables
 const getAllowedOrigins = () => {
@@ -31,11 +28,11 @@ const getAllowedOrigins = () => {
   ];
 
   // Add origins from environment variable
-  const envOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim()) : [];
+  const envOrigins = config.corsOrigins ? config.corsOrigins.split(',').map(origin => origin.trim()) : [];
 
   // Debug logging
   console.log('🔍 CORS Debug Info:');
-  console.log('📝 Raw CORS_ORIGINS env var:', process.env.CORS_ORIGINS);
+  console.log('📝 Raw CORS_ORIGINS env var:', config.corsOrigins);
   console.log('📋 Parsed env origins:', envOrigins);
   console.log('🌐 All allowed origins:', [...defaultOrigins, ...envOrigins]);
 
@@ -92,7 +89,7 @@ app.use('/rsvps', authMiddleware, rsvpRoutes);
 app.get('/debug/cors', (req, res) => {
   const allowedOrigins = getAllowedOrigins();
   res.json({
-    corsOrigins: process.env.CORS_ORIGINS,
+    corsOrigins: config.corsOrigins,
     allowedOrigins: allowedOrigins,
     requestOrigin: req.headers.origin
   });
@@ -104,7 +101,7 @@ app.get('/', (req, res) => {
     status: 'ok',
     message: 'CampusHub API is running',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: config.nodeEnv
   });
 });
 
@@ -122,7 +119,7 @@ app.listen(PORT, () => {
   console.log('🚀 CampusHub API Server Started');
   console.log('='.repeat(80));
   console.log(`📍 Port: ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🌍 Environment: ${config.nodeEnv}`);
   console.log(`⏰ Started at: ${new Date().toISOString()}`);
   console.log('='.repeat(80) + '\n');
 });

@@ -5,10 +5,10 @@ import * as model from '../models/index.js';
 // Club Settings
 // ============================================
 
-export const getClubSettings = (req: Request, res: Response) => {
+export const getClubSettings = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
-        const settings = model.getClubSettings(clubId);
+        const settings = await model.getClubSettings(clubId);
 
         if (!settings) {
             return res.status(404).json({ error: 'Club settings not found' });
@@ -20,13 +20,13 @@ export const getClubSettings = (req: Request, res: Response) => {
     }
 };
 
-export const updateClubSettings = (req: Request, res: Response) => {
+export const updateClubSettings = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const userId = req.user?.userId;
 
         // Check if user has permission to update settings
-        if (!model.canManageMembers(clubId, userId!)) {
+        if (!(await model.canManageMembers(clubId, userId!))) {
             return res.status(403).json({ error: 'Insufficient permissions' });
         }
 
@@ -36,7 +36,7 @@ export const updateClubSettings = (req: Request, res: Response) => {
         if (is_private !== undefined) updateData.is_private = is_private ? 1 : 0;
         if (auto_approve_members !== undefined) updateData.auto_approve_members = auto_approve_members ? 1 : 0;
 
-        model.updateClubSettings(clubId, updateData);
+        await model.updateClubSettings(clubId, updateData);
         res.json({ success: true, message: 'Club settings updated successfully' });
     } catch (error) {
         res.status(400).json({ error: (error as Error).message });
@@ -48,26 +48,26 @@ export const updateClubSettings = (req: Request, res: Response) => {
 // Join Requests
 // ============================================
 
-export const createJoinRequest = (req: Request, res: Response) => {
+export const createJoinRequest = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const userId = req.user?.userId!;
         const { message } = req.body;
 
         // Check if user is already a member
-        if (model.isClubMember(clubId, userId)) {
+        if (await model.isClubMember(clubId, userId)) {
             return res.status(409).json({ error: 'Already a member of this club' });
         }
 
         // Check if user already has a pending request
-        const existingRequests = model.getClubJoinRequests(clubId, 'pending');
+        const existingRequests = await model.getClubJoinRequests(clubId, 'pending');
         const hasPendingRequest = existingRequests.some((req: any) => req.user_id === userId);
 
         if (hasPendingRequest) {
             return res.status(409).json({ error: 'Join request already pending' });
         }
 
-        const result = model.createJoinRequest(clubId, userId, message || '');
+        const result = await model.createJoinRequest(clubId, userId, message || '');
         res.status(201).json({
             id: result.lastInsertRowid,
             message: 'Join request created successfully'
@@ -77,36 +77,36 @@ export const createJoinRequest = (req: Request, res: Response) => {
     }
 };
 
-export const getJoinRequests = (req: Request, res: Response) => {
+export const getJoinRequests = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const userId = req.user?.userId!;
         const { status } = req.query;
 
         // Check if user has permission to view join requests
-        if (!model.canManageMembers(clubId, userId)) {
+        if (!(await model.canManageMembers(clubId, userId))) {
             return res.status(403).json({ error: 'Insufficient permissions' });
         }
 
-        const requests = model.getClubJoinRequests(clubId, (status as string) || 'pending');
+        const requests = await model.getClubJoinRequests(clubId, (status as string) || 'pending');
         res.json(requests);
     } catch (error) {
         res.status(500).json({ error: (error as Error).message });
     }
 };
 
-export const approveJoinRequest = (req: Request, res: Response) => {
+export const approveJoinRequest = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const requestId = parseInt(req.params.requestId!);
         const userId = req.user?.userId!;
 
         // Check if user has permission to approve requests
-        if (!model.canManageMembers(clubId, userId)) {
+        if (!(await model.canManageMembers(clubId, userId))) {
             return res.status(403).json({ error: 'Insufficient permissions' });
         }
 
-        const joinRequest = model.getJoinRequest(requestId) as any;
+        const joinRequest = await model.getJoinRequest(requestId) as any;
         if (!joinRequest) {
             return res.status(404).json({ error: 'Join request not found' });
         }
@@ -116,10 +116,10 @@ export const approveJoinRequest = (req: Request, res: Response) => {
         }
 
         // Update request status
-        model.updateJoinRequest(requestId, 'approved', userId);
+        await model.updateJoinRequest(requestId, 'approved', userId);
 
         // Add user to club members
-        model.addHubMember(clubId, joinRequest.user_id, 'member');
+        await model.addHubMember(clubId, joinRequest.user_id, 'member');
 
         res.json({ success: true, message: 'Join request approved' });
     } catch (error) {
@@ -127,18 +127,18 @@ export const approveJoinRequest = (req: Request, res: Response) => {
     }
 };
 
-export const rejectJoinRequest = (req: Request, res: Response) => {
+export const rejectJoinRequest = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const requestId = parseInt(req.params.requestId!);
         const userId = req.user?.userId!;
 
         // Check if user has permission to reject requests
-        if (!model.canManageMembers(clubId, userId)) {
+        if (!(await model.canManageMembers(clubId, userId))) {
             return res.status(403).json({ error: 'Insufficient permissions' });
         }
 
-        const joinRequest = model.getJoinRequest(requestId) as any;
+        const joinRequest = await model.getJoinRequest(requestId) as any;
         if (!joinRequest) {
             return res.status(404).json({ error: 'Join request not found' });
         }
@@ -148,7 +148,7 @@ export const rejectJoinRequest = (req: Request, res: Response) => {
         }
 
         // Update request status
-        model.updateJoinRequest(requestId, 'rejected', userId);
+        await model.updateJoinRequest(requestId, 'rejected', userId);
 
         res.json({ success: true, message: 'Join request rejected' });
     } catch (error) {
@@ -161,14 +161,14 @@ export const rejectJoinRequest = (req: Request, res: Response) => {
 // Club Posts
 // ============================================
 
-export const createPost = (req: Request, res: Response) => {
+export const createPost = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const userId = req.user?.userId!;
         const { title, content, type } = req.body;
 
         // Check if user is a club member
-        if (!model.isClubMember(clubId, userId)) {
+        if (!(await model.isClubMember(clubId, userId))) {
             return res.status(403).json({ error: 'Must be a club member to create posts' });
         }
 
@@ -179,7 +179,7 @@ export const createPost = (req: Request, res: Response) => {
         const validTypes = ['general', 'announcement', 'discussion'];
         const postType = type && validTypes.includes(type) ? type : 'general';
 
-        const result = model.createClubPost(clubId, userId, title || '', content, postType);
+        const result = await model.createClubPost(clubId, userId, title || '', content, postType);
         res.status(201).json({
             id: result.lastInsertRowid,
             message: 'Post created successfully'
@@ -189,30 +189,30 @@ export const createPost = (req: Request, res: Response) => {
     }
 };
 
-export const getPosts = (req: Request, res: Response) => {
+export const getPosts = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const userId = req.user?.userId!;
 
         // Check if user is a club member
-        if (!model.isClubMember(clubId, userId)) {
+        if (!(await model.isClubMember(clubId, userId))) {
             return res.status(403).json({ error: 'Must be a club member to view posts' });
         }
 
-        const posts = model.getClubPosts(clubId);
+        const posts = await model.getClubPosts(clubId);
         res.json(posts);
     } catch (error) {
         res.status(500).json({ error: (error as Error).message });
     }
 };
 
-export const updatePost = (req: Request, res: Response) => {
+export const updatePost = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const postId = parseInt(req.params.postId!);
         const userId = req.user?.userId!;
 
-        const post = model.getClubPost(postId) as any;
+        const post = await model.getClubPost(postId) as any;
         if (!post) {
             return res.status(404).json({ error: 'Post not found' });
         }
@@ -222,7 +222,7 @@ export const updatePost = (req: Request, res: Response) => {
         }
 
         // Only author or moderators can update posts
-        if (post.author_id !== userId && !model.canManagePosts(clubId, userId)) {
+        if (post.author_id !== userId && !(await model.canManagePosts(clubId, userId))) {
             return res.status(403).json({ error: 'Insufficient permissions' });
         }
 
@@ -238,20 +238,20 @@ export const updatePost = (req: Request, res: Response) => {
             }
         }
 
-        model.updateClubPost(postId, updateData);
+        await model.updateClubPost(postId, updateData);
         res.json({ success: true, message: 'Post updated successfully' });
     } catch (error) {
         res.status(400).json({ error: (error as Error).message });
     }
 };
 
-export const deletePost = (req: Request, res: Response) => {
+export const deletePost = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const postId = parseInt(req.params.postId!);
         const userId = req.user?.userId!;
 
-        const post = model.getClubPost(postId) as any;
+        const post = await model.getClubPost(postId) as any;
         if (!post) {
             return res.status(404).json({ error: 'Post not found' });
         }
@@ -261,18 +261,18 @@ export const deletePost = (req: Request, res: Response) => {
         }
 
         // Only author or moderators can delete posts
-        if (post.author_id !== userId && !model.canManagePosts(clubId, userId)) {
+        if (post.author_id !== userId && !(await model.canManagePosts(clubId, userId))) {
             return res.status(403).json({ error: 'Insufficient permissions' });
         }
 
-        model.deleteClubPost(postId);
+        await model.deleteClubPost(postId);
         res.json({ success: true, message: 'Post deleted successfully' });
     } catch (error) {
         res.status(400).json({ error: (error as Error).message });
     }
 };
 
-export const pinPost = (req: Request, res: Response) => {
+export const pinPost = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const postId = parseInt(req.params.postId!);
@@ -280,11 +280,11 @@ export const pinPost = (req: Request, res: Response) => {
         const { pinned } = req.body;
 
         // Only moderators and above can pin posts
-        if (!model.canManagePosts(clubId, userId)) {
+        if (!(await model.canManagePosts(clubId, userId))) {
             return res.status(403).json({ error: 'Insufficient permissions' });
         }
 
-        const post = model.getClubPost(postId) as any;
+        const post = await model.getClubPost(postId) as any;
         if (!post) {
             return res.status(404).json({ error: 'Post not found' });
         }
@@ -293,7 +293,7 @@ export const pinPost = (req: Request, res: Response) => {
             return res.status(400).json({ error: 'Post does not belong to this club' });
         }
 
-        model.pinClubPost(postId, pinned);
+        await model.pinClubPost(postId, pinned);
         res.json({ success: true, message: `Post ${pinned ? 'pinned' : 'unpinned'} successfully` });
     } catch (error) {
         res.status(400).json({ error: (error as Error).message });
@@ -305,14 +305,14 @@ export const pinPost = (req: Request, res: Response) => {
 // Club Events
 // ============================================
 
-export const createClubEvent = (req: Request, res: Response) => {
+export const createClubEvent = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const userId = req.user?.userId!;
         const { event_id, visibility, target_audience } = req.body;
 
         // Only admins and leaders can create club events
-        if (!model.canManageMembers(clubId, userId)) {
+        if (!(await model.canManageMembers(clubId, userId))) {
             return res.status(403).json({ error: 'Insufficient permissions' });
         }
 
@@ -323,7 +323,7 @@ export const createClubEvent = (req: Request, res: Response) => {
         const validVisibilities = ['public', 'members_only', 'private'];
         const eventVisibility = visibility && validVisibilities.includes(visibility) ? visibility : 'public';
 
-        const result = model.createClubEvent(event_id, clubId, eventVisibility, target_audience || '');
+        const result = await model.createClubEvent(event_id, clubId, eventVisibility, target_audience || '');
         res.status(201).json({
             id: result.lastInsertRowid,
             message: 'Club event created successfully'
@@ -333,15 +333,15 @@ export const createClubEvent = (req: Request, res: Response) => {
     }
 };
 
-export const getClubEvents = (req: Request, res: Response) => {
+export const getClubEvents = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const userId = req.user?.userId!;
 
-        const isMember = model.isClubMember(clubId, userId);
-        const canManage = model.canManageMembers(clubId, userId);
+        const isMember = await model.isClubMember(clubId, userId);
+        const canManage = await model.canManageMembers(clubId, userId);
 
-        let events = model.getClubEvents(clubId);
+        let events = await model.getClubEvents(clubId);
 
         // Filter events based on visibility and user role
         events = events.filter((event: any) => {
@@ -357,7 +357,7 @@ export const getClubEvents = (req: Request, res: Response) => {
     }
 };
 
-export const updateEventVisibility = (req: Request, res: Response) => {
+export const updateEventVisibility = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const eventId = parseInt(req.params.eventId!);
@@ -365,7 +365,7 @@ export const updateEventVisibility = (req: Request, res: Response) => {
         const { visibility } = req.body;
 
         // Only admins and leaders can update event visibility
-        if (!model.canManageMembers(clubId, userId)) {
+        if (!(await model.canManageMembers(clubId, userId))) {
             return res.status(403).json({ error: 'Insufficient permissions' });
         }
 
@@ -374,7 +374,7 @@ export const updateEventVisibility = (req: Request, res: Response) => {
             return res.status(400).json({ error: 'Invalid visibility value' });
         }
 
-        model.updateClubEventVisibility(eventId, visibility);
+        await model.updateClubEventVisibility(eventId, visibility);
         res.json({ success: true, message: 'Event visibility updated successfully' });
     } catch (error) {
         res.status(400).json({ error: (error as Error).message });
@@ -386,13 +386,96 @@ export const updateEventVisibility = (req: Request, res: Response) => {
 // Membership Management
 // ============================================
 
-export const joinPublicClub = (req: Request, res: Response) => {
+export const getClubMembers = async (req: Request, res: Response) => {
+    try {
+        const clubId = parseInt(req.params.id!);
+        const userId = req.user?.userId!;
+
+        // Check if user is a club member or has management permissions
+        const isMember = await model.isClubMember(clubId, userId);
+        const canManage = await model.canManageMembers(clubId, userId);
+
+        if (!isMember && !canManage) {
+            return res.status(403).json({ error: 'Must be a club member to view members' });
+        }
+
+        const members = await model.getHubMembers(clubId);
+        res.json(members);
+    } catch (error) {
+        res.status(500).json({ error: (error as Error).message });
+    }
+};
+
+export const checkClubMembership = async (req: Request, res: Response) => {
+    try {
+        const clubId = parseInt(req.params.id!);
+        const targetUserId = parseInt(req.params.userId!);
+        const membership = await model.checkHubMembership(clubId, targetUserId);
+        res.json(membership || { isMember: false });
+    } catch (error) {
+        res.status(500).json({ error: (error as Error).message });
+    }
+};
+
+export const addClubMember = async (req: Request, res: Response) => {
+    try {
+        const clubId = parseInt(req.params.id!);
+        const userId = req.user?.userId!;
+        const { user_id, role } = req.body;
+
+        // Only leaders and admins can directly add members
+        if (!(await model.canManageMembers(clubId, userId))) {
+            return res.status(403).json({ error: 'Insufficient permissions' });
+        }
+
+        // Check if user is already a member
+        if (await model.isClubMember(clubId, user_id)) {
+            return res.status(409).json({ error: 'User is already a member' });
+        }
+
+        await model.addHubMember(clubId, user_id, role || 'member');
+        res.status(201).json({ success: true, message: 'Member added successfully' });
+    } catch (error) {
+        res.status(400).json({ error: (error as Error).message });
+    }
+};
+
+export const removeClubMember = async (req: Request, res: Response) => {
+    try {
+        const clubId = parseInt(req.params.id!);
+        const userId = req.user?.userId!;
+        const { user_id } = req.body;
+
+        // Only leaders and admins can remove members
+        if (!(await model.canManageMembers(clubId, userId))) {
+            return res.status(403).json({ error: 'Insufficient permissions' });
+        }
+
+        // Check if target user is a member
+        if (!(await model.isClubMember(clubId, user_id))) {
+            return res.status(404).json({ error: 'User is not a member' });
+        }
+
+        // Prevent removing the leader
+        const targetRole = await model.getUserClubRole(clubId, user_id);
+        if (targetRole === 'leader') {
+            return res.status(400).json({ error: 'Cannot remove the club leader' });
+        }
+
+        await model.removeHubMember(clubId, user_id);
+        res.json({ success: true, message: 'Member removed successfully' });
+    } catch (error) {
+        res.status(400).json({ error: (error as Error).message });
+    }
+};
+
+export const joinPublicClub = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const userId = req.user?.userId!;
 
         // Check if club exists and is public
-        const settings = model.getClubSettings(clubId) as any;
+        const settings = await model.getClubSettings(clubId) as any;
         if (!settings) {
             return res.status(404).json({ error: 'Club not found' });
         }
@@ -402,42 +485,42 @@ export const joinPublicClub = (req: Request, res: Response) => {
         }
 
         // Check if already a member
-        if (model.isClubMember(clubId, userId)) {
+        if (await model.isClubMember(clubId, userId)) {
             return res.status(409).json({ error: 'Already a member of this club' });
         }
 
         // Add user as member
-        model.addHubMember(clubId, userId, 'member');
+        await model.addHubMember(clubId, userId, 'member');
         res.status(201).json({ success: true, message: 'Joined club successfully' });
     } catch (error) {
         res.status(400).json({ error: (error as Error).message });
     }
 };
 
-export const leaveClub = (req: Request, res: Response) => {
+export const leaveClub = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const userId = req.user?.userId!;
 
         // Check if user is a member
-        if (!model.isClubMember(clubId, userId)) {
+        if (!(await model.isClubMember(clubId, userId))) {
             return res.status(400).json({ error: 'Not a member of this club' });
         }
 
         // Check if user is the leader
-        const role = model.getUserClubRole(clubId, userId);
+        const role = await model.getUserClubRole(clubId, userId);
         if (role === 'leader') {
             return res.status(400).json({ error: 'Club leader cannot leave. Please transfer leadership first.' });
         }
 
-        model.removeHubMember(clubId, userId);
+        await model.removeHubMember(clubId, userId);
         res.json({ success: true, message: 'Left club successfully' });
     } catch (error) {
         res.status(400).json({ error: (error as Error).message });
     }
 };
 
-export const updateMemberRole = (req: Request, res: Response) => {
+export const updateMemberRole = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const targetUserId = parseInt(req.params.userId!);
@@ -445,7 +528,7 @@ export const updateMemberRole = (req: Request, res: Response) => {
         const { role } = req.body;
 
         // Only leaders and admins can update roles
-        if (!model.canManageMembers(clubId, userId)) {
+        if (!(await model.canManageMembers(clubId, userId))) {
             return res.status(403).json({ error: 'Insufficient permissions' });
         }
 
@@ -456,19 +539,19 @@ export const updateMemberRole = (req: Request, res: Response) => {
         }
 
         // Check if target user is a member
-        if (!model.isClubMember(clubId, targetUserId)) {
+        if (!(await model.isClubMember(clubId, targetUserId))) {
             return res.status(404).json({ error: 'User is not a member of this club' });
         }
 
         // Only leader can assign leader role
-        const currentUserRole = model.getUserClubRole(clubId, userId);
+        const currentUserRole = await model.getUserClubRole(clubId, userId);
         if (role === 'leader' && currentUserRole !== 'leader') {
             return res.status(403).json({ error: 'Only the current leader can assign leadership' });
         }
 
         // Update role by removing and re-adding member
-        model.removeHubMember(clubId, targetUserId);
-        model.addHubMember(clubId, targetUserId, role);
+        await model.removeHubMember(clubId, targetUserId);
+        await model.addHubMember(clubId, targetUserId, role);
 
         res.json({ success: true, message: 'Member role updated successfully' });
     } catch (error) {
@@ -476,19 +559,19 @@ export const updateMemberRole = (req: Request, res: Response) => {
     }
 };
 
-export const deleteClub = (req: Request, res: Response) => {
+export const deleteClub = async (req: Request, res: Response) => {
     try {
         const clubId = parseInt(req.params.id!);
         const userId = req.user?.userId!;
 
         // Only the leader can delete the club
-        const userRole = model.getUserClubRole(clubId, userId);
+        const userRole = await model.getUserClubRole(clubId, userId);
         if (userRole !== 'leader') {
             return res.status(403).json({ error: 'Only the club leader can delete the club' });
         }
 
         // Delete the club (CASCADE will handle related records)
-        model.deleteHub(clubId);
+        await model.deleteHub(clubId);
         res.json({ success: true, message: 'Club deleted successfully' });
     } catch (error) {
         res.status(400).json({ error: (error as Error).message });

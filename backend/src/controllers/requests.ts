@@ -1,18 +1,18 @@
 import { Request, Response } from 'express';
 import * as model from '../models/index.js';
 
-export const getAllRequests = (req: Request, res: Response) => {
+export const getAllRequests = async (req: Request, res: Response) => {
   try {
-    const requests = model.getAllRequests();
+    const requests = await model.getAllRequests();
     res.json(requests);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
 };
 
-export const getRequest = (req: Request, res: Response) => {
+export const getRequest = async (req: Request, res: Response) => {
   try {
-    const request = model.getRequest(parseInt(req.params.id));
+    const request = await model.getRequest(parseInt(req.params.id));
     if (!request) {
       return res.status(404).json({ error: 'Request not found' });
     }
@@ -22,7 +22,7 @@ export const getRequest = (req: Request, res: Response) => {
   }
 };
 
-export const createRequest = (req: Request, res: Response) => {
+export const createRequest = async (req: Request, res: Response) => {
   const timestamp = new Date().toISOString();
   console.log(`[${timestamp}] 📋 CREATE Request:`, JSON.stringify(req.body, null, 2));
 
@@ -31,7 +31,7 @@ export const createRequest = (req: Request, res: Response) => {
 
     console.log(`[${timestamp}] 🔍 Fetching submitter info for submitter_id:`, submitter_id || 1);
 
-    const submitter = model.getUser(submitter_id || 1) as any;
+    const submitter = await model.getUser(submitter_id || 1) as any;
     if (!submitter) {
       console.error(`[${timestamp}] ❌ Submitter not found:`, submitter_id);
       return res.status(400).json({ error: 'Submitter not found' });
@@ -40,7 +40,7 @@ export const createRequest = (req: Request, res: Response) => {
     console.log(`[${timestamp}] ✅ Submitter found:`, submitter.name);
     console.log(`[${timestamp}] 💾 Inserting request into database...`);
 
-    const result = model.createRequest({
+    const result = await model.createRequest({
       title,
       description,
       type,
@@ -58,7 +58,6 @@ export const createRequest = (req: Request, res: Response) => {
     });
 
     console.log(`[${timestamp}] ✅ Request created with ID:`, result.lastInsertRowid);
-    console.log(`[${timestamp}] 📊 Changes:`, result.changes);
 
     res.status(201).json({ id: result.lastInsertRowid, message: 'Request created successfully' });
   } catch (error) {
@@ -68,18 +67,18 @@ export const createRequest = (req: Request, res: Response) => {
   }
 };
 
-export const updateRequest = (req: Request, res: Response) => {
+export const updateRequest = async (req: Request, res: Response) => {
   try {
-    model.updateRequest(parseInt(req.params.id), req.body);
+    await model.updateRequest(parseInt(req.params.id), req.body);
     res.json({ success: true, message: 'Request updated successfully' });
   } catch (error) {
     res.status(400).json({ error: (error as Error).message });
   }
 };
 
-export const deleteRequest = (req: Request, res: Response) => {
+export const deleteRequest = async (req: Request, res: Response) => {
   try {
-    model.deleteRequest(parseInt(req.params.id));
+    await model.deleteRequest(parseInt(req.params.id));
     res.json({ success: true, message: 'Request deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });

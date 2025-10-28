@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import * as model from '../models/index.js';
 
-export const createHub = (req: Request, res: Response) => {
+export const createHub = async (req: Request, res: Response) => {
   const timestamp = new Date().toISOString();
   console.log(`[${timestamp}] 🏢 CREATE Hub Request:`, JSON.stringify(req.body, null, 2));
 
@@ -9,28 +9,27 @@ export const createHub = (req: Request, res: Response) => {
     const { name, type, description, creator_id, icon, specialization, year, color, interests } = req.body;
 
     console.log(`[${timestamp}] 💾 Creating hub in database...`);
-    const result = model.createHub(name, type, description, creator_id, { icon, specialization, year, color });
+    const result = await model.createHub(name, type, description, creator_id, { icon, specialization, year, color });
     const hubId = result.lastInsertRowid;
 
     console.log(`[${timestamp}] ✅ Hub created with ID:`, hubId);
-    console.log(`[${timestamp}] 📊 Changes:`, result.changes);
 
     // Add creator as leader for clubs, creator for projects
     const creatorRole = type === 'Club' ? 'leader' : 'creator';
     console.log(`[${timestamp}] 👤 Adding creator as ${creatorRole}...`);
-    model.addHubMember(hubId as number, creator_id, creatorRole);
+    await model.addHubMember(hubId as number, creator_id, creatorRole);
 
     // Create club settings if this is a club
     if (type === 'Club') {
       console.log(`[${timestamp}] ⚙️  Creating club settings...`);
-      model.createClubSettings(hubId as number, false, true);
+      await model.createClubSettings(hubId as number, false, true);
     }
 
     if (interests && Array.isArray(interests)) {
       console.log(`[${timestamp}] 🏷️  Adding ${interests.length} interests...`);
-      interests.forEach((interest: string) => {
-        model.addHubInterest(hubId as number, interest);
-      });
+      for (const interest of interests) {
+        await model.addHubInterest(hubId as number, interest);
+      }
     }
 
     console.log(`[${timestamp}] ✅ Hub creation complete`);
@@ -42,9 +41,9 @@ export const createHub = (req: Request, res: Response) => {
   }
 };
 
-export const getHub = (req: Request, res: Response) => {
+export const getHub = async (req: Request, res: Response) => {
   try {
-    const hub = model.getHub(parseInt(req.params.id!));
+    const hub = await model.getHub(parseInt(req.params.id!));
     if (!hub) {
       return res.status(404).json({ error: 'Hub not found' });
     }
@@ -54,68 +53,85 @@ export const getHub = (req: Request, res: Response) => {
   }
 };
 
-export const getAllHubs = (req: Request, res: Response) => {
+export const getAllHubs = async (req: Request, res: Response) => {
+  const startTime = Date.now();
+  const timestamp = new Date().toISOString();
+  console.log(`\n🌐 [${timestamp}] GET /hubs request received`);
+
   try {
     const { type } = req.query;
-    const hubs = type ? model.getHubsByType(type as string) : model.getAllHubs();
+    console.log(`📋 [getAllHubs] Query params: type=${type || 'all'}`);
+
+    const hubs = type ? await model.getHubsByType(type as string) : await model.getAllHubs();
+
+    const totalTime = Date.now() - startTime;
+    console.log(`✅ [getAllHubs] Request completed in ${totalTime}ms`);
+    console.log(`📦 [getAllHubs] Returning ${hubs.length} hubs\n`);
+
+    if (totalTime > 2000) {
+      console.warn(`⚠️  [getAllHubs] SLOW REQUEST WARNING: ${totalTime}ms`);
+    }
+
     res.json(hubs);
   } catch (error) {
+    const totalTime = Date.now() - startTime;
+    console.error(`❌ [getAllHubs] Request failed after ${totalTime}ms:`, (error as Error).message);
     res.status(500).json({ error: (error as Error).message });
   }
 };
 
-export const updateHub = (req: Request, res: Response) => {
+export const updateHub = async (req: Request, res: Response) => {
   try {
-    model.updateHub(parseInt(req.params.id!), req.body);
+    await model.updateHub(parseInt(req.params.id!), req.body);
     res.json({ success: true, message: 'Hub updated successfully' });
   } catch (error) {
     res.status(400).json({ error: (error as Error).message });
   }
 };
 
-export const deleteHub = (req: Request, res: Response) => {
+export const deleteHub = async (req: Request, res: Response) => {
   try {
-    model.deleteHub(parseInt(req.params.id!));
+    await model.deleteHub(parseInt(req.params.id!));
     res.json({ success: true, message: 'Hub deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
 };
 
-export const getHubMembers = (req: Request, res: Response) => {
+export const getHubMembers = async (req: Request, res: Response) => {
   try {
-    const members = model.getHubMembers(parseInt(req.params.id!));
+    const members = await model.getHubMembers(parseInt(req.params.id!));
     res.json(members);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
 };
 
-export const addMember = (req: Request, res: Response) => {
+export const addMember = async (req: Request, res: Response) => {
   try {
     const { user_id, role } = req.body;
-    model.addHubMember(parseInt(req.params.id!), user_id, role || 'member');
+    await model.addHubMember(parseInt(req.params.id!), user_id, role || 'member');
     res.status(201).json({ success: true, message: 'Member added successfully' });
   } catch (error) {
     res.status(400).json({ error: (error as Error).message });
   }
 };
 
-export const removeMember = (req: Request, res: Response) => {
+export const removeMember = async (req: Request, res: Response) => {
   try {
     const { user_id } = req.body;
-    model.removeHubMember(parseInt(req.params.id!), user_id);
+    await model.removeHubMember(parseInt(req.params.id!), user_id);
     res.json({ success: true, message: 'Member removed successfully' });
   } catch (error) {
     res.status(400).json({ error: (error as Error).message });
   }
 };
 
-export const checkMembership = (req: Request, res: Response) => {
+export const checkMembership = async (req: Request, res: Response) => {
   try {
     const hubId = parseInt(req.params.id!);
     const userId = parseInt(req.params.userId!);
-    const membership = model.checkHubMembership(hubId, userId);
+    const membership = await model.checkHubMembership(hubId, userId);
     res.json(membership || { isMember: false });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
