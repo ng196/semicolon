@@ -4,5 +4,8 @@ export { default as HubsPage } from './pages/HubsPage';
 export { default as ProjectPage } from './pages/ProjectPage';
 export { default as ClubsPage } from './pages/ClubsPage';
 export { default as ClubPage } from './pages/ClubPage';
+export { ProjectCard } from './pages/ProjectCard';
+export { CreateProjectModal } from './pages/CreateProjectModal';
 export * from './components';
 export * from './hooks';
+export * from './projects';

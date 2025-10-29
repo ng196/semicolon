@@ -1,4 +1,4 @@
-# CampusHub Authentication System
+# Saksham Authentication System
 
 ## 🎉 Implementation Status: READY FOR TESTING
 

@@ -26,7 +26,7 @@ interface StoredOnboardingData {
 }
 
 class OnboardingStorageService {
-    private readonly STORAGE_KEY = 'campushub_onboarding_data';
+    private readonly STORAGE_KEY = 'saksham_onboarding_data';
     private readonly EXPIRY_MINUTES = 10;
     private cleanupTimer: NodeJS.Timeout | null = null;
 

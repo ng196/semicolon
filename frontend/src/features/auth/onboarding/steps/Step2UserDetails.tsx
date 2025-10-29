@@ -154,7 +154,7 @@ export const Step2UserDetails: React.FC<Step2Props> = ({
             {/* Help Text */}
             <div className="text-xs text-gray-500 space-y-1">
                 <p>• Username must be 3-20 characters (letters, numbers, underscores)</p>
-                <p>• Display name is how others will see you on CampusHub</p>
+                <p>• Display name is how others will see you on Saksham</p>
                 <p>• We'll check if your username is available</p>
             </div>
         </div>

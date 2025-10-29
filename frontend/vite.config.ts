@@ -41,10 +41,10 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}']
       },
-      includeAssets: ['icon-192.png', 'icon-512.png', 'placeholder.svg'],
+      includeAssets: ['icon-192.svg', 'icon-512.svg', 'placeholder.svg'],
       manifest: {
-        name: 'CampusHub - Student Portal',
-        short_name: 'CampusHub',
+        name: 'Saksham - Student Portal',
+        short_name: 'Saksham',
         description: 'Connect with classmates, discover events, join clubs, and engage with your campus community',
         theme_color: '#6366f1',
         background_color: '#ffffff',
@@ -54,15 +54,15 @@ export default defineConfig(({ mode }) => ({
         scope: '/',
         icons: [
           {
-            src: '/icon-192.png',
+            src: 'icon-192.svg',
             sizes: '192x192',
-            type: 'image/png',
+            type: 'image/svg+xml',
             purpose: 'any'
           },
           {
-            src: '/icon-512.png',
+            src: 'icon-512.svg',
             sizes: '512x512',
-            type: 'image/png',
+            type: 'image/svg+xml',
             purpose: 'any'
           }
         ],
@@ -71,7 +71,7 @@ export default defineConfig(({ mode }) => ({
           {
             name: 'Dashboard',
             short_name: 'Home',
-            description: 'Open CampusHub Dashboard',
+            description: 'Open Saksham Dashboard',
             url: '/dashboard'
           },
           {

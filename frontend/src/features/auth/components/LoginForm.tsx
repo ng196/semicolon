@@ -84,7 +84,7 @@ export default function LoginForm() {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'campushub-login.html';
+        link.download = 'saksham-login.html';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -123,7 +123,7 @@ export default function LoginForm() {
                         </div>
                     </div>
                     <h1 className="text-2xl font-bold text-foreground">Welcome back</h1>
-                    <p className="text-muted-foreground">Sign in to your CampusHub account</p>
+                    <p className="text-muted-foreground">Sign in to your Saksham account</p>
                 </div>
 
                 <Form {...form}>

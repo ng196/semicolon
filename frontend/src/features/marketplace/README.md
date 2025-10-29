@@ -1,6 +1,6 @@
 # Marketplace Module
 
-A modular, SOLID-principle-based implementation of the CampusHub Marketplace feature.
+A modular, SOLID-principle-based implementation of the Saksham Marketplace feature.
 
 ## Structure
 

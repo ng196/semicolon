@@ -1,4 +1,4 @@
--- CampusHub Complete Supabase Schema
+-- Saksham Complete Supabase Schema
 -- Run this in your Supabase SQL Editor
 
 -- Enable required extensions

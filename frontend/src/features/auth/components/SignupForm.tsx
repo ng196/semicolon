@@ -42,7 +42,7 @@ export default function SignupForm() {
                         </div>
                     </div>
                     <h1 className="text-2xl font-bold text-foreground">Create account</h1>
-                    <p className="text-muted-foreground">Join the CampusHub community</p>
+                    <p className="text-muted-foreground">Join the Saksham community</p>
                 </div>
 
                 <Form {...form}>

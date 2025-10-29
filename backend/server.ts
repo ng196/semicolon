@@ -5,6 +5,7 @@ import cors from 'cors';
 import authRoutes from './src/routes/auth.js';
 import userRoutes from './src/routes/users.js';
 import hubRoutes from './src/routes/hubs.js';
+import projectRoutes from './src/routes/projects.js';
 import eventRoutes from './src/routes/events.js';
 import marketplaceRoutes from './src/routes/marketplace.js';
 import requestRoutes from './src/routes/requests.js';
@@ -79,6 +80,7 @@ app.use('/auth', authRoutes);
 // Protected routes (require authentication)
 app.use('/users', authMiddleware, userRoutes);
 app.use('/hubs', authMiddleware, hubRoutes);
+app.use('/projects', authMiddleware, projectRoutes);
 app.use('/events', authMiddleware, eventRoutes);
 app.use('/marketplace', authMiddleware, marketplaceRoutes);
 app.use('/requests', authMiddleware, requestRoutes);
@@ -99,7 +101,7 @@ app.get('/debug/cors', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     status: 'ok',
-    message: 'CampusHub API is running',
+    message: 'Saksham API is running',
     timestamp: new Date().toISOString(),
     environment: config.nodeEnv
   });
@@ -116,7 +118,7 @@ app.use((req, res) => {
 
 app.listen(PORT, () => {
   console.log('\n' + '='.repeat(80));
-  console.log('🚀 CampusHub API Server Started');
+  console.log('🚀 Saksham API Server Started');
   console.log('='.repeat(80));
   console.log(`📍 Port: ${PORT}`);
   console.log(`🌍 Environment: ${config.nodeEnv}`);

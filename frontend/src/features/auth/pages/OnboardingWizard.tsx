@@ -84,7 +84,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'campushub-signup.html';
+        link.download = 'saksham-signup.html';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -227,7 +227,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
                 </div>
 
                 <CardHeader className="text-center">
-                    <CardTitle className="text-2xl font-bold">Join CampusHub</CardTitle>
+                    <CardTitle className="text-2xl font-bold">Join Saksham</CardTitle>
                     <p className="text-gray-600 text-sm">{getStepDescription()}</p>
 
                     {/* Progress Bar */}

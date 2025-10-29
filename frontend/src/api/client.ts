@@ -367,6 +367,59 @@ export const authApi = {
   },
 };
 
+// Projects API
+export const projectsApi = {
+  // Get user's projects
+  getUserProjects: async (userId?: number) => {
+    const query = userId ? `?userId=${userId}` : '';
+    return apiClient.get(`/projects${query}`);
+  },
+
+  // Get project details
+  getById: async (id: string | number, userId?: number) => {
+    const query = userId ? `?userId=${userId}` : '';
+    return apiClient.get(`/projects/${id}${query}`);
+  },
+
+  // Get project members
+  getMembers: async (id: string | number) => {
+    return apiClient.get(`/projects/${id}/members`);
+  },
+
+  // Get user role in project
+  getUserRole: async (projectId: string | number, userId: number) => {
+    return apiClient.get(`/projects/${projectId}/members/${userId}/role`);
+  },
+
+  // Join request management
+  getJoinRequests: async (projectId: string | number, userId?: number) => {
+    const query = userId ? `?userId=${userId}` : '';
+    return apiClient.get(`/projects/${projectId}/join-requests${query}`);
+  },
+
+  createJoinRequest: async (projectId: string | number, data: { userId?: number; message: string }) => {
+    return apiClient.post(`/projects/${projectId}/join-requests`, data);
+  },
+
+  approveJoinRequest: async (projectId: string | number, requestId: number, userId?: number) => {
+    return apiClient.post(`/projects/${projectId}/join-requests/${requestId}/approve`, { userId });
+  },
+
+  rejectJoinRequest: async (projectId: string | number, requestId: number, userId?: number) => {
+    return apiClient.post(`/projects/${projectId}/join-requests/${requestId}/reject`, { userId });
+  },
+
+  // Member management
+  leaveProject: async (projectId: string | number, userId?: number) => {
+    return apiClient.delete(`/projects/${projectId}/members/leave`, { userId });
+  },
+
+  // Activity tracking
+  getActivity: async (projectId: string | number) => {
+    return apiClient.get(`/projects/${projectId}/activity`);
+  },
+};
+
 // Export the API client for advanced usage
 export { apiClient };
 

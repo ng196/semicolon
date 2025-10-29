@@ -1,4 +1,4 @@
-# CampusHub
+# Saksham
 
 ## Setup
 
@@ -6,7 +6,6 @@
 ```bash
 cd backend
 npm install
-npm run seed  # Populates database from JSON files
 npm run dev
 ```
 

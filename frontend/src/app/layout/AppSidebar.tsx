@@ -29,7 +29,7 @@ export function AppSidebar() {
             <span className="text-lg font-bold text-primary-foreground">CH</span>
           </div>
           <div>
-            <h2 className="text-base font-semibold text-sidebar-foreground">CampusHub</h2>
+            <h2 className="text-base font-semibold text-sidebar-foreground">Saksham</h2>
             <p className="text-xs text-sidebar-muted">Student Portal</p>
           </div>
         </div>

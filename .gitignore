@@ -1,6 +1,7 @@
 .github
 code
 .playwright-mcp
+tools
 
 .env
 .env.local
@@ -10,6 +11,7 @@ files
 
 .eslintignore
 .kiro
+.vscode 
 
 # Database files
 backend/database/*.db
@@ -20,9 +22,11 @@ test
 *.db
 *.db-shm
 *.db-wal
+testsprite_tests
 
 # Logs
 backend/apilogs.txt
 *.log
 AGENTS.md
 specs
+.specify

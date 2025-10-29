@@ -64,7 +64,7 @@ export function PWAInstallPrompt() {
         <Card className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-80 z-50 p-4 shadow-lg border-primary/20 bg-card/95 backdrop-blur">
             <div className="flex items-start gap-3">
                 <div className="flex-1">
-                    <h3 className="font-semibold text-sm">Install CampusHub</h3>
+                    <h3 className="font-semibold text-sm">Install Saksham</h3>
                     <p className="text-xs text-muted-foreground mt-1">
                         Add to your home screen for quick access and offline use
                     </p>
