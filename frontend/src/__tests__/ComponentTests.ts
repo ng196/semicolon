@@ -4,7 +4,7 @@
  * Format: Each component exports testComponentName function
  */
 
-import { logInfo, logError } from '@/utils/logger';
+import { logInfo, logError } from '@/shared/utils/logger';
 // import { testButton } from '@/components/primitives/Button';
 // import { testAvatar } from '@/components/primitives/Avatar';
 // import { testBadge } from '@/components/primitives/Badge';

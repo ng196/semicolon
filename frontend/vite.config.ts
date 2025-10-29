@@ -11,10 +11,6 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     allowedHosts: [
       "localhost",
-      ".ngrok.io",
-      ".ngrok-free.app",
-      ".ngrok.app",
-      "4a4d6b5803f2.ngrok-free.app", // Your specific ngrok URL
       ".onrender.com" // Allow all Render domains
     ],
     proxy: {
@@ -45,7 +41,7 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}']
       },
-      includeAssets: ['placeholder.svg'],
+      includeAssets: ['icon-192.png', 'icon-512.png', 'placeholder.svg'],
       manifest: {
         name: 'CampusHub - Student Portal',
         short_name: 'CampusHub',
@@ -58,15 +54,15 @@ export default defineConfig(({ mode }) => ({
         scope: '/',
         icons: [
           {
-            src: 'placeholder.svg',
+            src: '/icon-192.png',
             sizes: '192x192',
-            type: 'image/svg+xml',
+            type: 'image/png',
             purpose: 'any'
           },
           {
-            src: 'placeholder.svg',
+            src: '/icon-512.png',
             sizes: '512x512',
-            type: 'image/svg+xml',
+            type: 'image/png',
             purpose: 'any'
           }
         ],
@@ -76,7 +72,7 @@ export default defineConfig(({ mode }) => ({
             name: 'Dashboard',
             short_name: 'Home',
             description: 'Open CampusHub Dashboard',
-            url: '/'
+            url: '/dashboard'
           },
           {
             name: 'Events',
